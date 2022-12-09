@@ -1,0 +1,7 @@
+{
+  "name": "goodstudies_ionic",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react"
+}
