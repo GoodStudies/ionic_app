@@ -1,10 +1,14 @@
 {
   "compilerOptions": {
+	"experimentalDecorators": true,
+	"emitDecoratorMetadata": true,
     "target": "es5",
     "lib": [
       "dom",
       "dom.iterable",
-      "esnext"
+      "esnext",
+	  "es5",
+	  "es6",
     ],
     "allowJs": true,
     "skipLibCheck": true,
@@ -18,7 +22,8 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noEmit": true,
-    "jsx": "react-jsx"
+    "jsx": "react-jsx",
+	"types": ["reflect-metadata", "node", "jest"]
   },
   "include": [
     "src"

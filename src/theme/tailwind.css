@@ -1,0 +1,30 @@
+/* Heebo font */
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400&display=swap');
+/* Catamaran */
+@import url('https://fonts.googleapis.com/css2?family=Heebo&display=swap');
+/* Open Sans */
+@import url('https://fonts.googleapis.com/css2?family=Heebo&family=Open+Sans&display=swap');
+/* Rubik Gemstones */
+@import url('https://fonts.googleapis.com/css2?family=Heebo&family=Open+Sans&family=Rubik+Gemstones&display=swap');
+
+/* ./src/theme/tailwind.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.menu {
+	color: transparent;
+	background-image: url('../../public/assets/icon/gs_book_logo.svg');
+	background-size: 100% 100%;
+}
+
+.participantList {
+	height: 60vh;
+}
+
+.button {
+	padding: 4px;
+	color: #2A6BF2;
+	border-radius: 5px;
+	border: 1px solid #2A6BF2;
+}

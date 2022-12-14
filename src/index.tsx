@@ -1,8 +1,10 @@
 import React from 'react';
+import ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';
-import App from './App';
+import App, { AppDataSource } from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
+import 'reflect-metadata';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
