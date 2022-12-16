@@ -16,6 +16,8 @@ export class Answer {
 	@ManyToOne(() => Question, (question) => question.answers)
 	question!: Question;
 
-	@ManyToOne(() => Participant, (participant) => participant.answers)
+	@ManyToOne(() => Participant, (participant) => participant.answers, {
+		cascade: true,
+	})
 	participant!: Participant;
 }

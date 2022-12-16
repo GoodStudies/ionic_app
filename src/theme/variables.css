@@ -190,6 +190,22 @@ http://ionicframework.com/docs/theming/ */
     --ion-toolbar-border-color: var(--ion-color-step-250);
   }
 
+  .my-custom-modal-css .modal-wrapper {
+	height: 20%;
+	top: 80%;
+	position: absolute;
+	display: block;
+ }
+
+  ion-modal.my-custom-class::part(content) {
+    --height: 90%;
+    position: absolute;
+    top: 5%;
+    --width: 90%;
+    border-radius: 25px;
+    display: block;
+ }
+
 
   /*
    * Material Design Dark Theme

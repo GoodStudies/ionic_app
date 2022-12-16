@@ -5,7 +5,7 @@ import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import Home from './pages/Home';
 import 'reflect-metadata';
-import { CapacitorSQLite, SQLiteConnection } from '@capacitor-community/sqlite';
+import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
 import { DataSource } from 'typeorm';
 import { Participant } from './entity/Participant';
 import { Answer } from './entity/Answer';
@@ -41,6 +41,12 @@ import './theme/tailwind.css';
 // initialized fixedQuestions list
 const get_fixed = 'https://api.goodstudies.de/questions/study/2/fixed';
 export let fixedQuestions: any[] = [];
+// needs to be initialized every time using the participant table
+export let participantList: Participant[] = [];
+
+const initParticipantList = async () => {
+	participantList = await AppDataSource.manager.find(Participant);
+}
 
 interface existingConnInterface {
 	existConn: boolean,
@@ -61,7 +67,7 @@ AppDataSource = new DataSource({
 	// this broke everything!
 	// needs to be false in production; need to figure out migrations until then
 	synchronize: true,
-	// logging: true,
+	logging: true,
 	migrations: [
 		'dist/src/db/migration/*.js'
 	],
@@ -98,59 +104,54 @@ const fetchFixedQuestions = async (req: string)  => {
 fetchFixedQuestions(get_fixed);
 
 const createFixedQuestionGroup = async () => {
-	const fixedQuestionGroup = AppDataSource.manager.create(QuestionGroup, {
-		name: 'fixedQuestions',
-		// id doesn't matter, bc fixed is unique every time
+	let fixedQuestionGroup: QuestionGroup;
+	let fixedQuestionSubgroup: QuestionSubgroup;
+	let fixedQuestion: Question;
+	let fixedQuestionMultipleChoice: QuestionMultipleChoice;
+
+	fixedQuestionGroup = AppDataSource.manager.create(QuestionGroup, {
+		// needs to be retrieved from the backend as well;
 		id: 1,
+		name: 'fixedQuestionGroup',
 		is_fixed: true,
-		question_subgroups: []
+		question_subgroups: [],
 	});
-	await AppDataSource.manager.save(fixedQuestionGroup);
-	const fixedQuestionSubgroup = AppDataSource.manager.create(QuestionSubgroup, {
-		name: 'fixedQuestionsSubgroup',
-		// id doesn't matter, bc fixed is unique every time
+	fixedQuestionSubgroup = AppDataSource.manager.create(QuestionSubgroup, {
+		// needs to be retrieved from the backend as well;
 		id: 1,
-		questions:[]
+		name: 'fixedQuestionSubgroup',
+		questions: [],
+		questionGroup: fixedQuestionGroup,
 	});
-	for(let i = 0; i < fixedQuestions.length; i++) {
-		let fixedQuestion = AppDataSource.manager.create(Question, {
+	// add subgroup to group
+	fixedQuestionGroup.question_subgroups.push(fixedQuestionSubgroup);
+	// create the fixed questions
+	for (let i = 0; i < fixedQuestions.length; i++) {
+		fixedQuestion = AppDataSource.manager.create(Question, {
 			id: fixedQuestions[i].id,
 			question: fixedQuestions[i].question_name,
-			unit: fixedQuestions[i].unit,
 			questionSubgroup: fixedQuestionSubgroup,
-			questionMultipleChoices: []
-	})
-	// push question into questionSubgroup
-	fixedQuestionSubgroup.questions.push(fixedQuestion);
-	// save fixed question
-	await AppDataSource.manager.save(fixedQuestion);
-	}
-	for(let i = 0; i < fixedQuestions.length; i++) {
+			questionMultipleChoices: [],
+		});
+		// add the fixed question to the fixed question subgroup
+		fixedQuestionSubgroup.questions.push(fixedQuestion);
+		// create the multiple choices for the fixed questions
 		if (fixedQuestions[i].question_multiple_choice.length > 0) {
-			console.log('HUHUHUHU');
-			for(let j = 0; j < fixedQuestions[i].question_multiple_choice.length; j++) {
-				let fixedQuestionMultipleChoice = AppDataSource.manager.create(QuestionMultipleChoice, {
+			for (let j = 0; j < fixedQuestions[i].question_multiple_choice.length; j++) {
+				console.log('mp loop');
+				fixedQuestionMultipleChoice = AppDataSource.manager.create(QuestionMultipleChoice, {
 					id: fixedQuestions[i].question_multiple_choice[j].id,
 					value: fixedQuestions[i].question_multiple_choice[j].value,
-				})
-			let question = await AppDataSource.manager.findOne(Question, {
-				where: {
-					id: fixedQuestions[i].id
-				}
-			});
-			//
-			fixedQuestionMultipleChoice.question = question!;
-			// save questionMultipleChoice
-			await AppDataSource.manager.save(fixedQuestionMultipleChoice);
-			// push questionMutlipleChoice into question
-			// seems to create some kind of inifinite loop, why?
-			fixedQuestions[i].question_multiple_choice.push(fixedQuestionMultipleChoice);
+					question: fixedQuestion,
+				});
+				await AppDataSource.manager.save(fixedQuestionMultipleChoice);
+				fixedQuestion.questionMultipleChoices.push(fixedQuestionMultipleChoice);
 			}
 		}
+		await AppDataSource.manager.save(fixedQuestion);
 	}
-	// push subgroup into group
 	await AppDataSource.manager.save(fixedQuestionSubgroup);
-	fixedQuestionGroup.question_subgroups.push(fixedQuestionSubgroup);
+	await AppDataSource.manager.save(fixedQuestionGroup);
 	console.log('successfully created fixed questions group!');
 }
 
@@ -162,7 +163,8 @@ sqlite.checkConnectionsConsistency().catch((e) => {
 AppDataSource.initialize()
 .then(() => {
 	console.log("Data Source has been initialized!");
-	createFixedQuestionGroup();
+	initParticipantList();
+	// createFixedQuestionGroup();
 })
 .catch((err) => {
 	console.error("Error during Data Source initialization", err);

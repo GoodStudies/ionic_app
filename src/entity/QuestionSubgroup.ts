@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn , Column, ManyToOne, OneToMany } from 'typeorm';
 import { Question } from './Question';
+import { QuestionGroup } from './QuestionGroup';
 
 @Entity()
 export class QuestionSubgroup {
@@ -14,4 +15,7 @@ export class QuestionSubgroup {
 
 	@OneToMany(() => Question, (question) => question.questionSubgroup)
 	questions!: Question[];
+
+	@ManyToOne(() => QuestionGroup, (questionGroup) => questionGroup.question_subgroups)
+	questionGroup!: QuestionGroup;
 }

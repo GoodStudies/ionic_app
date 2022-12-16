@@ -22,9 +22,32 @@
 	height: 60vh;
 }
 
-.button {
+.custom-button {
 	padding: 4px;
 	color: #2A6BF2;
 	border-radius: 5px;
 	border: 1px solid #2A6BF2;
+}
+
+.date-picker {
+	padding: 4px;
+	color: #2A6BF2;
+}
+
+.modal-wrapper-horizontal {
+	--width: 60%;
+	--height: 30%;
+}
+
+.modal-wrapper-vertical {
+	--width: 80%;
+	--height: 21%;
+}
+
+.custom-toast {
+	--border-width: 1px;
+	--border-style: solid;
+	--border-color: #00C184;
+	--background: #FFFFFF;
+	--color: #00C184;
 }
