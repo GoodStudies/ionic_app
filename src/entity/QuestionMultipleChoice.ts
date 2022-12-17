@@ -13,6 +13,8 @@ export class QuestionMultipleChoice {
 	@Column('text', {nullable: true})
 	value!: string;
 
-	@ManyToOne(() => Question, (question) => question.questionMultipleChoices)
+	@ManyToOne(() => Question, (question) => question.questionMultipleChoices, {
+		onDelete: 'SET NULL'
+	})
 	question!: Question;
 }

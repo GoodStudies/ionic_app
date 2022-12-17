@@ -18,6 +18,8 @@ export class Participant {
 	@Column('text', {nullable: true})
 	birthdate!: string;
 
-	@OneToMany(() => Answer, (answer) => answer.participant)
+	@OneToMany(() => Answer, (answer) => answer.participant, {
+		onDelete: 'SET NULL'
+	})
 	answers!: Answer[];
 }

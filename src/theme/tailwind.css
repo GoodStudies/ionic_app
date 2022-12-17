@@ -27,6 +27,15 @@
 	color: #2A6BF2;
 	border-radius: 5px;
 	border: 1px solid #2A6BF2;
+	font-size: smaller;
+}
+
+.custom-button-delete {
+	padding: 4px;
+	color: #CE0000;
+	border-radius: 5px;
+	border: 1px solid #CE0000;
+	font-size: smaller;
 }
 
 .date-picker {

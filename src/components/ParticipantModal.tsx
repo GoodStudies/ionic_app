@@ -25,16 +25,9 @@ import { Question } from "../entity/Question";
 import { Participant } from "../entity/Participant";
 import { QuestionMultipleChoice } from "../entity/QuestionMultipleChoice";
 
-interface ParticipantModalProps {
-  onDismiss: (data?: string | null | undefined | number, role?: string) => void;
-  answersList: string[];
-}
-
-const ParticipantModal: React.FC<ParticipantModalProps> = ({
+const ParticipantModal = ({
   onDismiss,
-  answersList
-} : {
-  answersList: string[];
+}: {
   onDismiss: (data?: string | null | undefined | number, role?: string) => void;
 }) => {
   const [open, setOpen] = useState(false);
@@ -52,6 +45,7 @@ const ParticipantModal: React.FC<ParticipantModalProps> = ({
   };
 
   const onSubmit = async (data: any) => {
+    let answer;
     console.log(data);
     console.log(value);
     // here I need to create the participant + answers
@@ -82,10 +76,17 @@ const ParticipantModal: React.FC<ParticipantModalProps> = ({
     );
     // create the answers here:
     for (let i = 0; i < fixedQuestions.length; i++) {
-      let answer = AppDataSource.manager.create(Answer, {
-        value: data[fixedQuestions[i].question_name],
-        participant: participant,
-      });
+      if (fixedQuestions[i].question_name === "Geburtsdatum") {
+        answer = AppDataSource.manager.create(Answer, {
+          value: value?.toString(),
+          participant: participant,
+        });
+      } else {
+        answer = AppDataSource.manager.create(Answer, {
+          value: data[fixedQuestions[i].question_name],
+          participant: participant,
+        });
+      }
       let question = await AppDataSource.manager.findOne(Question, {
         where: {
           question: fixedQuestions[i].question_name,
@@ -106,33 +107,13 @@ const ParticipantModal: React.FC<ParticipantModalProps> = ({
     });
     console.log("the answers are: ");
     for (let i = 0; i < answers.length; i++) {
-      console.log(("the answer is: " + answers[i].value));
+      console.log("the answer is: " + answers[i].value);
     }
     // add participant to the participantList
     participantList.push(participant);
     // closes the modal
     onDismiss(null, "confirm");
   };
-
-//   const createAnswersList = async (questions: any[], participant: Participant) => {
-// 	for(let i = 0; i < questions.length; i++) {
-// 		const question = await AppDataSource.manager.findOne(Question, {
-// 		  where: {
-// 			id: questions[i].id,
-// 		  },
-// 		});
-// 		const answers = await AppDataSource.manager.find(Answer, {
-// 			where: {
-// 				question: question!,
-// 				participant: participant
-// 			},
-// 		});
-// 		// in case no answers were given
-// 		if (answers[answers.length - 1] != undefined) {
-// 			answersList.push(answers[answers.length - 1].value);
-// 			console.log(`pushed answer ${answers[answers.length - 1].value}`);
-// 		}
-// 	}};
 
   return (
     <IonPage>
@@ -143,7 +124,7 @@ const ParticipantModal: React.FC<ParticipantModalProps> = ({
               Abbruch
             </IonButton>
           </IonButtons>
-          <IonTitle>Teilnehmer Name</IonTitle>
+          <IonTitle>huhu</IonTitle>
           <IonButtons slot="end">
             <IonButton
               onClick={handleSubmit((data) => {
@@ -159,12 +140,12 @@ const ParticipantModal: React.FC<ParticipantModalProps> = ({
         {fixedQuestions.map((question, index) =>
           question.question_multiple_choice.length > 0 ? (
             <IonList>
-              <IonItem>
+              <IonItem key={index}>
                 <IonLabel position="stacked">{question.question_name}</IonLabel>
                 <IonSelect
                   {...register(question.question_name)}
                   interface="popover"
-                  placeholder={'keine Angabe'}
+                  placeholder={"keine Angabe"}
                 >
                   {question.question_multiple_choice.map(
                     (choice: QuestionMultipleChoice, index: number) => (

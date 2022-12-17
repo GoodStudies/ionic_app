@@ -4,15 +4,17 @@ interface OutlinedIconButtonProps {
 	onClick?: () => void,
 	label: string,
 	icon: any,
+	style: any
 }
 
 const OutlinedIconButton: React.FC<OutlinedIconButtonProps> = ({
 	onClick,
 	label,
-	icon
+	icon,
+	style
 }) => {
 	return (
-		<IonButton className='custom-button text-sm' color={'white'} onClick={onClick}>
+		<IonButton className={style} color={'white'} onClick={onClick}>
 			<IonIcon icon={icon} className='text-sm'/>
 			{label}
 		</IonButton>

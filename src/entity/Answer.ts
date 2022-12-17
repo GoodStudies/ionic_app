@@ -17,6 +17,7 @@ export class Answer {
 	question!: Question;
 
 	@ManyToOne(() => Participant, (participant) => participant.answers, {
+		onDelete: 'SET NULL',
 		cascade: true,
 	})
 	participant!: Participant;

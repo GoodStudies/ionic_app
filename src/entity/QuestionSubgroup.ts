@@ -13,9 +13,13 @@ export class QuestionSubgroup {
 	@Column('text', {nullable: true})
 	name!: string;
 
-	@OneToMany(() => Question, (question) => question.questionSubgroup)
+	@OneToMany(() => Question, (question) => question.questionSubgroup, {
+		onDelete: 'SET NULL'
+	})
 	questions!: Question[];
 
-	@ManyToOne(() => QuestionGroup, (questionGroup) => questionGroup.question_subgroups)
+	@ManyToOne(() => QuestionGroup, (questionGroup) => questionGroup.question_subgroups, {
+		onDelete: 'SET NULL'
+	})
 	questionGroup!: QuestionGroup;
 }

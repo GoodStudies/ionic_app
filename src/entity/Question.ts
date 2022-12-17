@@ -22,16 +22,19 @@ export class Question {
 
 	@ManyToOne(() => QuestionSubgroup, (questionSubgroup) => questionSubgroup.questions, {
 		cascade: true,
+		onDelete: 'SET NULL'
 	})
 	questionSubgroup!: QuestionSubgroup;
 
 	@OneToMany(() => Answer, (answer) => answer.question, {
 		cascade: true,
+		onDelete: 'SET NULL'
 	})
 	answers!: Answer[];
 
 	@OneToMany(() => QuestionMultipleChoice, (questionMultipleChoice) => questionMultipleChoice.question, {
 		cascade: true,
+		onDelete: 'SET NULL'
 	})
 	questionMultipleChoices!: QuestionMultipleChoice[];
 }

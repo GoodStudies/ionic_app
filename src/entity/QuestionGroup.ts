@@ -15,6 +15,8 @@ export class QuestionGroup {
 	@Column('int', {nullable: true})
 	is_fixed!: boolean;
 
-	@OneToMany(() => QuestionSubgroup, (questionSubgroup) => questionSubgroup.questionGroup)
+	@OneToMany(() => QuestionSubgroup, (questionSubgroup) => questionSubgroup.questionGroup, {
+		onDelete: 'SET NULL'
+	})
 	question_subgroups!: QuestionSubgroup[];
 }
