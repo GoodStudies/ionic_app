@@ -20,7 +20,6 @@ import Participants from "./pages/Participants";
 import Menu from "./pages/Menu";
 import Login from "./pages/Login";
 import React from "react";
-import { ParticipantListContext } from "./components/ParticipantList/ParticipantListContext";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -42,29 +41,14 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 import "./theme/tailwind.css";
 
+// Context Hook
+import { useParticipantList } from "./components/ParticipantList/ParticipantListContext";
+
 // initialized fixedQuestions list
 const get_fixed = "https://api.goodstudies.de/questions/study/2/fixed";
 export let fixedQuestions: any[] = [];
 // needs to be initialized every time using the participant objects
 export let participantList: Participant[] = [];
-
-export let initialState = { list: participantList }
-
-export const enum REDUCER_ACTION_TYPE {
-	UPDATE
-}
-
-export type ReducerAction = {
-	type: REDUCER_ACTION_TYPE;
-}
-
-export const reducer = (state: typeof initialState, action: ReducerAction): typeof initialState => {
-	switch(action.type) {
-		case REDUCER_ACTION_TYPE.UPDATE: {
-			return { ...state, list: participantList }
-		}
-	}
-}
 
 export const initParticipantList = async () => {
   participantList = await AppDataSource.manager.find(Participant);
@@ -205,9 +189,14 @@ AppDataSource.initialize()
   });
 
 const App: React.FC = () => {
-  const [newParticipantList, setParticipantList] = useState(participantList);
+//   const { participantList, setParticipantList } = useParticipantList();
   const [existConn, setExistConn] = useState(false);
   existingConn = { existConn: existConn, setExistConn: setExistConn };
+  const { newParticipantList, setParticipantList } = useParticipantList();
+
+  useEffect(() => {
+	setParticipantList(participantList);
+  }, [participantList])
 
   return (
 	  <IonApp>

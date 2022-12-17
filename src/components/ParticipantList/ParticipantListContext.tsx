@@ -1,36 +1,30 @@
+import React, { useState } from "react";
+import { createContext, useContext } from "react";
+import { Participant } from "../../entity/Participant";
 import { participantList } from "../../App";
-import React, { createContext, useReducer } from "react";
 
-let ParticipantListContext = createContext({} as any);
 
-const initialState = {
-	participants: participantList,
+type ContextType = {
+	newParticipantList: Participant[],
+	setParticipantList: React.Dispatch<React.SetStateAction<Participant[]>>
 }
 
-let reducer = (state: any, action: any) => {
-	switch(action.type) {
-		case "updateParticipant": {
-			return { ...state, participants: action.participants}
-		}
-	}
-	return state;
+const ParticipantListContext = createContext<ContextType>({} as ContextType);
+
+interface Props {
+	children: React.ReactNode
 }
 
-function ParticipantListProvider(props: any) {
-	const fullInitialState = {
-		...initialState,
-	}
-
-	let [state, dispatch] = useReducer(reducer, fullInitialState);
-	let value = { state, dispatch };
+const ContextProvider: React.FC<Props> = ({ children }) => {
+	const [newParticipantList, setParticipantList] = useState(participantList);
 
 	return (
-		<ParticipantListContext.Provider value={value}>
-			{props.children}
+		<ParticipantListContext.Provider value={{ newParticipantList, setParticipantList }}>
+			{children}
 		</ParticipantListContext.Provider>
-	);
+	)
 }
 
-let ParticipantContextConsumer = ParticipantListContext.Consumer;
+export default ContextProvider;
 
-export { ParticipantListContext, ParticipantContextConsumer, ParticipantListProvider };
+export const useParticipantList = () => useContext(ParticipantListContext);

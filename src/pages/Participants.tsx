@@ -11,8 +11,7 @@ import {
 import { useContext, useReducer, useState } from "react";
 import ParticipantModal from "../components/ParticipantModal";
 import { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
-import { fixedQuestions, initialState, participantList, reducer } from "../App";
-import { ParticipantListContext } from "../components/ParticipantList/ParticipantListContext";
+import { fixedQuestions, participantList } from "../App";
 
 const ParticipantsTable: React.FC = () => {
   return (

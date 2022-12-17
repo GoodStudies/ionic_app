@@ -7,7 +7,7 @@ import { Question } from "../../entity/Question";
 import { trash } from "ionicons/icons";
 import { Participant } from "../../entity/Participant";
 import useOrientation from "../../hooks/useOrientation";
-import { AppDataSource, fixedQuestions, participantList, reducer, REDUCER_ACTION_TYPE } from "../../App";
+import { AppDataSource, fixedQuestions, initParticipantList, participantList } from "../../App";
 import { QuestionMultipleChoice } from "../../entity/QuestionMultipleChoice";
 import {
   IonButton,
@@ -33,6 +33,7 @@ import {
   useIonAlert,
 } from "@ionic/react";
 import OutlinedIconButton from "../OutlinedIconButton";
+import { useParticipantList } from "./ParticipantListContext";
 
 const onSubmit = async (data: any, birthdate: string | null, participant: Participant) => {
   for (let i = 0; i < fixedQuestions.length; i++) {
@@ -100,7 +101,7 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
   const [value, setValue] = useState<string | null>("Auswaehlen");
   const { isPortrait } = useOrientation();
   const { register, handleSubmit } = useForm();
-  const [state, dispatch] = useReducer(reducer, {list: participantList});
+  const { newParticipantList, setParticipantList } = useParticipantList();
 
   const onIonChangeHandler = (value: string | string[] | null) => {
     let formattedDate = format(parseISO(value as string), "dd.MM.yyyy");
@@ -127,8 +128,10 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
 	var updatedParticipantList = participantList.filter((() => participant.local_id != participant.local_id));
 	console.log('removed participant from list!');
 	// setParticipantList(updatedParticipantList);
-	dispatch({type: REDUCER_ACTION_TYPE.UPDATE });
-	console.log('dispatched!');
+	setParticipantList(updatedParticipantList);
+	initParticipantList();
+	setOpen(false);
+	console.log('used state!');
 }
 
   const getAnswers = async (participant: Participant) => {
@@ -244,7 +247,7 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
 						{
 							text: 'Bestätigen',
 							handler: () => {
-								deleteParticipant(participant);
+								deleteParticipant(participant)
 								console.log('Pressed bestätigen');
 							}
 						}

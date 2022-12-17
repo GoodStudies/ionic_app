@@ -5,12 +5,15 @@ import App, { AppDataSource } from './App';
 import * as serviceWorkerRegistration from './serviceWorkerRegistration';
 import reportWebVitals from './reportWebVitals';
 import 'reflect-metadata';
+import ContextProvider from './components/ParticipantList/ParticipantListContext';
 
 const container = document.getElementById('root');
 const root = createRoot(container!);
 root.render(
   <React.StrictMode>
-    <App />
+	<ContextProvider>
+    	<App />
+	</ContextProvider>
   </React.StrictMode>
 );
 
