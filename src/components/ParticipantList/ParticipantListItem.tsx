@@ -53,6 +53,7 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
   const [presentAlert] = useIonAlert();
   const [openDate, setOpenDate] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [showDeleteToast, setShowDeleteToast] = useState(false);
   const [answers, setAnswers] = useState<string[]>([]);
   const [value, setValue] = useState<string | null>("Auswaehlen");
   const { isPortrait } = useOrientation();
@@ -207,7 +208,6 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
                       {
                         text: "Abbrechen",
                         handler: () => {
-                          console.log("Pressed abbrechen");
                         },
                       },
                       {
@@ -215,7 +215,7 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
                         handler: () => {
                           deleteParticipant(participant);
                           setOpen(false);
-                          console.log("Pressed bestätigen");
+						  setShowDeleteToast(true);
                         },
                       },
                     ],
@@ -252,6 +252,13 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
         isOpen={showToast}
         onDidDismiss={() => setShowToast(false)}
         message="Teilnehmer wurde erfolgreich aktualisiert"
+        duration={2000}
+      />
+	  <IonToast
+        cssClass={"custom-toast"}
+        isOpen={showDeleteToast}
+        onDidDismiss={() => setShowDeleteToast(false)}
+        message="Teilnehmer wurde erfolgreich entfernt"
         duration={2000}
       />
     </IonCard>
