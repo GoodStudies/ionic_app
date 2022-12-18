@@ -1,4 +1,4 @@
-import { IonButton, IonGrid, IonList, IonToast, useIonModal } from "@ionic/react";
+import { IonGrid, IonList, IonToast, useIonModal } from "@ionic/react";
 import PageLayout from "../components/PageLayout";
 import { addCircleOutline } from "ionicons/icons";
 import OutlinedIconButton from "../components/OutlinedIconButton";
@@ -8,10 +8,10 @@ import {
   TableColumns,
   columnNames,
 } from "../components/ParticipantList/TableColumns";
-import { useContext, useReducer, useState } from "react";
+import { useState } from "react";
 import ParticipantModal from "../components/ParticipantModal";
 import { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
-import { fixedQuestions, participantList } from "../App";
+import { participantList } from "../App";
 
 const ParticipantsTable: React.FC = () => {
   return (
@@ -50,7 +50,7 @@ const Participants: React.FC = () => {
       <PageLayout title="Teilnehmer Liste" content={ParticipantsTable}>
         <div className="flex justify-center pt-20">
           <OutlinedIconButton
-            style={'custom-button'}
+            style={"custom-button"}
             onClick={openModal}
             label={"Teilnehmer hinzufuegen"}
             icon={addCircleOutline}

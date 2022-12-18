@@ -1,14 +1,10 @@
-import { useEffect, useState } from "react";
-import { SQLiteHook, useSQLite } from "react-sqlite-hook";
-import { Redirect, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { Route } from "react-router-dom";
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import Home from "./pages/Home";
 import "reflect-metadata";
-import {
-  CapacitorSQLite,
-  SQLiteConnection,
-} from "@capacitor-community/sqlite";
+import { CapacitorSQLite, SQLiteConnection } from "@capacitor-community/sqlite";
 import { DataSource } from "typeorm";
 import { Participant } from "./entity/Participant";
 import { Answer } from "./entity/Answer";
@@ -41,28 +37,17 @@ import "@ionic/react/css/display.css";
 import "./theme/variables.css";
 import "./theme/tailwind.css";
 
-// Context Hook
+/* Context Hook */
 import { useParticipantList } from "./components/ParticipantList/ParticipantListContext";
 
-// initialized fixedQuestions list
-const get_fixed = "https://api.goodstudies.de/questions/study/2/fixed";
-export let fixedQuestions: any[] = [];
-// needs to be initialized every time using the participant objects
-export let participantList: Participant[] = [];
+/* API */
+import { fetchFixedQuestions } from "./api/getRequests";
+import { get_fixed } from "./api/endpoints";
 
-export const initParticipantList = async () => {
-  participantList = await AppDataSource.manager.find(Participant);
-};
-
-interface existingConnInterface {
-  existConn: boolean;
-  setExistConn: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
-// export let sqlite: SQLiteHook;
-export let sqlite = new SQLiteConnection(CapacitorSQLite);
-export let existingConn: existingConnInterface;
 export let AppDataSource: DataSource;
+export let fixedQuestions: any[] = [];
+export let participantList: Participant[] = [];
+export let sqlite = new SQLiteConnection(CapacitorSQLite);
 
 setupIonicReact();
 
@@ -85,93 +70,11 @@ AppDataSource = new DataSource({
   ],
 });
 
-const sendRequest = async (req: string) => {
-  try {
-    const response = await fetch(req, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-    const data = await response.json();
-    console.log("data:" + data[0].question_name);
-    return data;
-  } catch (err: any) {
-    console.log("Error: ", err);
-    return err;
-  }
+export const initParticipantList = async () => {
+  participantList = await AppDataSource.manager.find(Participant);
 };
 
-const fetchFixedQuestions = async (req: string) => {
-  sendRequest(req).then((fixed) => {
-    for (let i = 0; i < fixed.length; i++) {
-      fixedQuestions.push(fixed[i]);
-      console.log("question: " + fixed[i].question_name);
-    }
-    console.log("length: " + fixed.length);
-    console.log("finished");
-  });
-};
 fetchFixedQuestions(get_fixed);
-
-const createFixedQuestionGroup = async () => {
-  let fixedQuestionGroup: QuestionGroup;
-  let fixedQuestionSubgroup: QuestionSubgroup;
-  let fixedQuestion: Question;
-  let fixedQuestionMultipleChoice: QuestionMultipleChoice;
-
-  fixedQuestionGroup = AppDataSource.manager.create(QuestionGroup, {
-    // needs to be retrieved from the backend as well;
-    id: 1,
-    name: "fixedQuestionGroup",
-    is_fixed: true,
-    question_subgroups: [],
-  });
-  fixedQuestionSubgroup = AppDataSource.manager.create(QuestionSubgroup, {
-    // needs to be retrieved from the backend as well;
-    id: 1,
-    name: "fixedQuestionSubgroup",
-    questions: [],
-    questionGroup: fixedQuestionGroup,
-  });
-  // add subgroup to group
-  fixedQuestionGroup.question_subgroups.push(fixedQuestionSubgroup);
-  // create the fixed questions
-  for (let i = 0; i < fixedQuestions.length; i++) {
-    fixedQuestion = AppDataSource.manager.create(Question, {
-      id: fixedQuestions[i].id,
-      question: fixedQuestions[i].question_name,
-      questionSubgroup: fixedQuestionSubgroup,
-      questionMultipleChoices: [],
-    });
-    // add the fixed question to the fixed question subgroup
-    fixedQuestionSubgroup.questions.push(fixedQuestion);
-    // create the multiple choices for the fixed questions
-    if (fixedQuestions[i].question_multiple_choice.length > 0) {
-      for (
-        let j = 0;
-        j < fixedQuestions[i].question_multiple_choice.length;
-        j++
-      ) {
-        console.log("mp loop");
-        fixedQuestionMultipleChoice = AppDataSource.manager.create(
-          QuestionMultipleChoice,
-          {
-            id: fixedQuestions[i].question_multiple_choice[j].id,
-            value: fixedQuestions[i].question_multiple_choice[j].value,
-            question: fixedQuestion,
-          }
-        );
-        await AppDataSource.manager.save(fixedQuestionMultipleChoice);
-        fixedQuestion.questionMultipleChoices.push(fixedQuestionMultipleChoice);
-      }
-    }
-    await AppDataSource.manager.save(fixedQuestion);
-  }
-  await AppDataSource.manager.save(fixedQuestionSubgroup);
-  await AppDataSource.manager.save(fixedQuestionGroup);
-  console.log("successfully created fixed questions group!");
-};
 
 sqlite.checkConnectionsConsistency().catch((e) => {
   console.log(e);
@@ -182,31 +85,27 @@ AppDataSource.initialize()
   .then(() => {
     console.log("Data Source has been initialized!");
     initParticipantList();
-    // createFixedQuestionGroup();
   })
   .catch((err) => {
     console.error("Error during Data Source initialization", err);
   });
 
 const App: React.FC = () => {
-//   const { participantList, setParticipantList } = useParticipantList();
-  const [existConn, setExistConn] = useState(false);
-  existingConn = { existConn: existConn, setExistConn: setExistConn };
-  const { newParticipantList, setParticipantList } = useParticipantList();
+  const { setParticipantList } = useParticipantList();
 
   useEffect(() => {
-	setParticipantList(participantList);
-  }, [participantList])
+    setParticipantList(participantList);
+  }, [participantList]);
 
   return (
-	  <IonApp>
+    <IonApp>
       <IonReactRouter>
-			<IonRouterOutlet>
-				<Route exact path="/" component={Login} />
-				<Route exact path="/app" component={Menu} />
-				<Route exact path="/home" component={Home} />
-				<Route exact path="/participants" component={Participants} />
-			</IonRouterOutlet>
+        <IonRouterOutlet>
+          <Route exact path="/" component={Login} />
+          <Route exact path="/app" component={Menu} />
+          <Route exact path="/home" component={Home} />
+          <Route exact path="/participants" component={Participants} />
+        </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>
   );

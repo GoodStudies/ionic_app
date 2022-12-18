@@ -1,0 +1,1 @@
+export const get_fixed = "https://api.goodstudies.de/questions/study/2/fixed";

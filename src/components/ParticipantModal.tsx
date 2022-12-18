@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { format, parseISO } from "date-fns";
 import useOrientation from "../hooks/useOrientation";
-import { AppDataSource, fixedQuestions, participantList } from "../App";
+import { fixedQuestions } from "../App";
 import {
   IonButton,
   IonButtons,
@@ -20,10 +20,8 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import { Answer } from "../entity/Answer";
-import { Question } from "../entity/Question";
-import { Participant } from "../entity/Participant";
 import { QuestionMultipleChoice } from "../entity/QuestionMultipleChoice";
+import { createParticipant } from "../db/createParticipant";
 
 const ParticipantModal = ({
   onDismiss,
@@ -44,74 +42,8 @@ const ParticipantModal = ({
     setValue(formattedDate);
   };
 
-  const onSubmit = async (data: any) => {
-    let answer;
-    console.log(data);
-    console.log(value);
-    // here I need to create the participant + answers
-    const participant = AppDataSource.manager.create(Participant, {
-      firstname: data["Vorname"],
-      lastname: data["Nachname"],
-      birthdate: value?.toString(),
-    });
-    await AppDataSource.manager.save(participant);
-    console.log("successfully created participant!");
-    console.log("check whether the participant really was created...");
-    const participants = await AppDataSource.manager.find(Participant, {
-      where: {
-        firstname: data["Vorname"],
-      },
-    });
-    console.log(
-      "the found participants lastname is: " +
-        participants[participants.length - 1].lastname
-    );
-    console.log(
-      "the found participants birthdate is: " +
-        participants[participants.length - 1].birthdate
-    );
-    console.log(
-      "the found participants id is: " +
-        participants[participants.length - 1].local_id
-    );
-    // create the answers here:
-    for (let i = 0; i < fixedQuestions.length; i++) {
-      if (fixedQuestions[i].question_name === "Geburtsdatum") {
-        answer = AppDataSource.manager.create(Answer, {
-          value: value?.toString(),
-          participant: participant,
-        });
-      } else {
-        answer = AppDataSource.manager.create(Answer, {
-          value: data[fixedQuestions[i].question_name],
-          participant: participant,
-        });
-      }
-      let question = await AppDataSource.manager.findOne(Question, {
-        where: {
-          question: fixedQuestions[i].question_name,
-        },
-      });
-      console.log(
-        `answer for ${question?.question} was succcessfully created!`
-      );
-      answer.question = question!;
-      await AppDataSource.manager.save(answer);
-      console.log(`answer for ${question?.question} was succcessfully saved!`);
-    }
-    console.log("check whether answers got saved...");
-    const answers = await AppDataSource.manager.find(Answer, {
-      where: {
-        participant: participant,
-      },
-    });
-    console.log("the answers are: ");
-    for (let i = 0; i < answers.length; i++) {
-      console.log("the answer is: " + answers[i].value);
-    }
-    // add participant to the participantList
-    participantList.push(participant);
-    // closes the modal
+  const onSubmit = async (data: any, birthdate: string | undefined) => {
+    createParticipant(data, birthdate);
     onDismiss(null, "confirm");
   };
 
@@ -124,11 +56,11 @@ const ParticipantModal = ({
               Abbruch
             </IonButton>
           </IonButtons>
-          <IonTitle>huhu</IonTitle>
+          <IonTitle>Teilnehmer erstellen</IonTitle>
           <IonButtons slot="end">
             <IonButton
               onClick={handleSubmit((data) => {
-                onSubmit(data);
+                onSubmit(data, value?.toString());
               })}
             >
               Speichern
