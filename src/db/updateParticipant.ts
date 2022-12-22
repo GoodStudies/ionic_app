@@ -36,7 +36,7 @@ export const updateParticipant = async (
         });
         await AppDataSource.manager.save(new_answer);
       }
-	  // update the participant if firstname, lastname and birthday were changed
+      // update the participant if firstname, lastname and birthday were changed
       if (question[question.length - 1].question == "Vorname") {
         participant.firstname = data[fixedQuestions[i].question_name];
       } else if (question[question.length - 1].question == "Nachname") {

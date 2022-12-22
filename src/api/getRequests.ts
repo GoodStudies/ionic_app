@@ -20,9 +20,11 @@ export const fetchFixedQuestions = async (req: string) => {
   sendRequest(req).then((fixed) => {
     for (let i = 0; i < fixed.length; i++) {
       fixedQuestions.push(fixed[i]);
-      console.log("question: " + fixed[i].question_name);
     }
-    console.log("length: " + fixed.length);
-    console.log("finished");
+    console.log("fetched fixed questions");
   });
+};
+
+export const fetchQuestionGroups = async (req: string) => {
+  sendRequest(req).then((groups) => {});
 };

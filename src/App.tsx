@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { Route } from "react-router-dom";
-import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { IonReactRouter } from "@ionic/react-router";
 import Home from "./pages/Home";
 import "reflect-metadata";
@@ -11,6 +10,7 @@ import { Answer } from "./entity/Answer";
 import { Question } from "./entity/Question";
 import { QuestionGroup } from "./entity/QuestionGroup";
 import { QuestionMultipleChoice } from "./entity/QuestionMultipleChoice";
+import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { QuestionSubgroup } from "./entity/QuestionSubgroup";
 import Participants from "./pages/Participants";
 import Menu from "./pages/Menu";
@@ -43,11 +43,14 @@ import { useParticipantList } from "./components/ParticipantList/ParticipantList
 /* API */
 import { fetchFixedQuestions } from "./api/getRequests";
 import { get_fixed } from "./api/endpoints";
+import QuestionGroups from "./pages/QuestionGroups";
+import { fetchAndCreateStudyQuestions, test_request } from "./db/createGroups";
 
 export let AppDataSource: DataSource;
 export let fixedQuestions: any[] = [];
 export let participantList: Participant[] = [];
 export let sqlite = new SQLiteConnection(CapacitorSQLite);
+export let groups: QuestionGroup[] = [];
 
 setupIonicReact();
 
@@ -73,8 +76,11 @@ AppDataSource = new DataSource({
 export const initParticipantList = async () => {
   participantList = await AppDataSource.manager.find(Participant);
 };
-
 fetchFixedQuestions(get_fixed);
+
+export const getAllQuestionGroups = async () => {
+  groups = await AppDataSource.manager.find(QuestionGroup);
+};
 
 sqlite.checkConnectionsConsistency().catch((e) => {
   console.log(e);
@@ -85,6 +91,9 @@ AppDataSource.initialize()
   .then(() => {
     console.log("Data Source has been initialized!");
     initParticipantList();
+    getAllQuestionGroups();
+    // this needs to be called once, when the app is "initialized @ school"
+    // fetchAndCreateStudyQuestions();
   })
   .catch((err) => {
     console.error("Error during Data Source initialization", err);
@@ -102,9 +111,9 @@ const App: React.FC = () => {
       <IonReactRouter>
         <IonRouterOutlet>
           <Route exact path="/" component={Login} />
-          <Route exact path="/app" component={Menu} />
           <Route exact path="/home" component={Home} />
           <Route exact path="/participants" component={Participants} />
+          <Route exact path="/questionGroups" component={QuestionGroups} />
         </IonRouterOutlet>
       </IonReactRouter>
     </IonApp>

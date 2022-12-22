@@ -1,10 +1,10 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { personAdd } from "ionicons/icons";
+import { bicycle, personAdd } from "ionicons/icons";
 import { format, parseISO } from "date-fns";
 import { Answer } from "../../entity/Answer";
 import { Question } from "../../entity/Question";
-import { trash } from "ionicons/icons";
+import { trash, basketballOutline } from "ionicons/icons";
 import { Participant } from "../../entity/Participant";
 import useOrientation from "../../hooks/useOrientation";
 import {
@@ -36,10 +36,12 @@ import {
   IonToast,
   IonToolbar,
   useIonAlert,
+  useIonRouter,
 } from "@ionic/react";
 import OutlinedIconButton from "../OutlinedIconButton";
 import { useParticipantList } from "./ParticipantListContext";
 import { updateParticipant } from "../../db/updateParticipant";
+import { useParticipant } from "../ParticipantContext";
 
 interface ParticipantListItemProps {
   participant: Participant;
@@ -59,6 +61,8 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
   const { isPortrait } = useOrientation();
   const { register, handleSubmit } = useForm();
   const { setParticipantList } = useParticipantList();
+  const { setSelectedParticipant } = useParticipant();
+  const navigation = useIonRouter();
 
   const onIonChangeHandler = (value: string | string[] | null) => {
     let formattedDate = format(parseISO(value as string), "dd.MM.yyyy");
@@ -114,6 +118,12 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
     setAnswers(new_answers);
   };
 
+  const changePage = () => {
+    console.log("changePage");
+    setSelectedParticipant(participant);
+    navigation.push("/questionGroups", "forward");
+  };
+
   return (
     <IonCard className="p-1 m-4">
       <IonRow>
@@ -123,6 +133,14 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
         <IonCol className="italic text-[#2A6BF2]" push="1" onClick={openModal}>
           bearbeiten
           <IonIcon icon={personAdd}></IonIcon>
+        </IonCol>
+        <IonCol
+          className="italic text-[#2A6BF2]"
+          push="0.5"
+          onClick={changePage}
+        >
+          aufnehmen
+          <IonIcon icon={bicycle}></IonIcon>
         </IonCol>
       </IonRow>
       <IonModal
@@ -156,7 +174,7 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
             {fixedQuestions.map((question, index) =>
               question.question_multiple_choice.length > 0 ? (
                 <IonList>
-                  <IonItem>
+                  <IonItem key={index}>
                     <IonLabel position="stacked">
                       {question.question_name}
                     </IonLabel>
@@ -207,15 +225,14 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
                     buttons: [
                       {
                         text: "Abbrechen",
-                        handler: () => {
-                        },
+                        handler: () => {},
                       },
                       {
                         text: "Bestätigen",
                         handler: () => {
                           deleteParticipant(participant);
                           setOpen(false);
-						  setShowDeleteToast(true);
+                          setShowDeleteToast(true);
                         },
                       },
                     ],
@@ -254,7 +271,7 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
         message="Teilnehmer wurde erfolgreich aktualisiert"
         duration={2000}
       />
-	  <IonToast
+      <IonToast
         cssClass={"custom-toast"}
         isOpen={showDeleteToast}
         onDidDismiss={() => setShowDeleteToast(false)}

@@ -1,4 +1,10 @@
-import { IonGrid, IonList, IonToast, useIonModal } from "@ionic/react";
+import {
+  IonButton,
+  IonGrid,
+  IonList,
+  IonToast,
+  useIonModal,
+} from "@ionic/react";
 import PageLayout from "../components/PageLayout";
 import { addCircleOutline } from "ionicons/icons";
 import OutlinedIconButton from "../components/OutlinedIconButton";
@@ -12,6 +18,7 @@ import { useState } from "react";
 import ParticipantModal from "../components/ParticipantModal";
 import { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
 import { participantList } from "../App";
+import { deleteEverything, findAll, getQuestionGroups } from "../db/queryDb";
 
 const ParticipantsTable: React.FC = () => {
   return (

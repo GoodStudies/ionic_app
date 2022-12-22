@@ -16,6 +16,7 @@ export const TableColumns: React.FC<TableColumnsProps> = ({
       <IonCol>{ColumnNames[1]}</IonCol>
       <IonCol>{ColumnNames[2]}</IonCol>
       <IonCol></IonCol>
+      <IonCol></IonCol>
     </IonRow>
   );
 };

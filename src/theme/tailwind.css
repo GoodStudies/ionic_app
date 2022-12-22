@@ -1,11 +1,11 @@
 /* Heebo font */
-@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@400&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Heebo:wght@400&display=swap");
 /* Catamaran */
-@import url('https://fonts.googleapis.com/css2?family=Heebo&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Heebo&display=swap");
 /* Open Sans */
-@import url('https://fonts.googleapis.com/css2?family=Heebo&family=Open+Sans&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Heebo&family=Open+Sans&display=swap");
 /* Rubik Gemstones */
-@import url('https://fonts.googleapis.com/css2?family=Heebo&family=Open+Sans&family=Rubik+Gemstones&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Heebo&family=Open+Sans&family=Rubik+Gemstones&display=swap");
 
 /* ./src/theme/tailwind.css */
 @tailwind base;
@@ -13,50 +13,54 @@
 @tailwind utilities;
 
 .menu {
-	color: transparent;
-	background-image: url('../../public/assets/icon/gs_book_logo.svg');
-	background-size: 100% 100%;
+  color: transparent;
+  background-image: url("../../public/assets/icon/gs_book_logo.svg");
+  background-size: 100% 100%;
 }
 
 .participantList {
-	height: 60vh;
+  height: 60vh;
 }
 
 .custom-button {
-	padding: 4px;
-	color: #2A6BF2;
-	border-radius: 5px;
-	border: 1px solid #2A6BF2;
-	font-size: smaller;
+  padding: 4px;
+  color: #2a6bf2;
+  border-radius: 5px;
+  border: 1px solid #2a6bf2;
+  font-size: smaller;
 }
 
 .custom-button-delete {
-	padding: 4px;
-	color: #CE0000;
-	border-radius: 5px;
-	border: 1px solid #CE0000;
-	font-size: smaller;
+  padding: 4px;
+  color: #ce0000;
+  border-radius: 5px;
+  border: 1px solid #ce0000;
+  font-size: smaller;
 }
 
 .date-picker {
-	padding: 4px;
-	color: #2A6BF2;
+  padding: 4px;
+  color: #2a6bf2;
+}
+
+.item-card {
+  --border-radius: 10px;
 }
 
 .modal-wrapper-horizontal {
-	--width: 60%;
-	--height: 30%;
+  --width: 60%;
+  --height: 30%;
 }
 
 .modal-wrapper-vertical {
-	--width: 80%;
-	--height: 21%;
+  --width: 80%;
+  --height: 21%;
 }
 
 .custom-toast {
-	--border-width: 1px;
-	--border-style: solid;
-	--border-color: #00C184;
-	--background: #FFFFFF;
-	--color: #00C184;
+  --border-width: 1px;
+  --border-style: solid;
+  --border-color: #00c184;
+  --background: #ffffff;
+  --color: #00c184;
 }
