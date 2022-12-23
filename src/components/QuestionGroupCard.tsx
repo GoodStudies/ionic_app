@@ -4,8 +4,10 @@ import {
   IonCheckbox,
   IonItem,
   IonLabel,
+  IonToast,
   useIonModal,
 } from "@ionic/react";
+import { useState } from "react";
 import { QuestionGroup } from "../entity/QuestionGroup";
 import DisciplineModal from "./DisciplineModal";
 
@@ -18,8 +20,9 @@ interface CardProps {
 }
 
 const QuestionGroupCardItem: React.FC<CardItemProps> = ({ questionGroup }) => {
+  const [toast, setToast] = useState(false);
   const [present, dismiss] = useIonModal(DisciplineModal, {
-    dismiss: () => dismiss(),
+    dismiss: () => onDismiss(),
     questionGroup: questionGroup,
   });
 
@@ -27,13 +30,27 @@ const QuestionGroupCardItem: React.FC<CardItemProps> = ({ questionGroup }) => {
     onDidDismiss: () => dismiss(),
   };
 
+  const onDismiss = () => {
+	dismiss();
+	setToast(true);
+  }
+
   // here we need to implement the function, which checks whether all questions are answered
   return (
+	<div>
     <IonItem class="item-card">
       <IonCheckbox slot="start" disabled={true}></IonCheckbox>
       <IonLabel>{questionGroup.name}</IonLabel>
       <IonButton onClick={() => present(modalOptions)}>Open Modal</IonButton>
     </IonItem>
+	<IonToast
+          cssClass={"custom-toast"}
+          isOpen={toast}
+          onDidDismiss={() => setToast(false)}
+          message="Teilnehmer wurde erfolgreich gespeichert"
+          duration={2000}
+        />
+	</div>
   );
 };
 
