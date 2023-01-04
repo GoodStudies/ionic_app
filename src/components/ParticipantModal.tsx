@@ -70,8 +70,8 @@ const ParticipantModal = ({
       </IonHeader>
       <IonContent className="ion-padding">
         {fixedQuestions.map((question, index) =>
-          question.question_multiple_choice.length > 0 ? (
-            <IonList>
+          question.multiple_choices.length > 0 ? (
+            <IonList key={index}>
               <IonItem key={index}>
                 <IonLabel position="stacked">{question.question_name}</IonLabel>
                 <IonSelect
@@ -79,7 +79,7 @@ const ParticipantModal = ({
                   interface="popover"
                   placeholder={"keine Angabe"}
                 >
-                  {question.question_multiple_choice.map(
+                  {question.multiple_choices.map(
                     (choice: QuestionMultipleChoice, index: number) => (
                       <IonSelectOption key={index} value={choice.value}>
                         {choice.value}

@@ -16,7 +16,7 @@ const OutlinedIconButton: React.FC<OutlinedIconButtonProps> = ({
   return (
     <IonButton className={style} color={"white"} onClick={onClick}>
       <IonIcon icon={icon} className="text-sm" />
-      {label}
+      <span className="pl-1">{label}</span>
     </IonButton>
   );
 };

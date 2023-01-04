@@ -9,8 +9,9 @@ import {
   IonToolbar,
   useIonRouter,
 } from "@ionic/react";
-import { get_groups } from "../api/endpoints";
-import { sendRequest } from "../api/getRequests";
+import { deleteServerData, sendDeleteRequest } from "../api/getRequests";
+import { get_subgroups } from "../api/endpoints";
+import { deleteEverything } from "../db/queryDb";
 
 const Login: React.FC = () => {
   const navigation = useIonRouter();
@@ -31,6 +32,7 @@ const Login: React.FC = () => {
       </IonHeader>
       <IonContent>
         <IonButton onClick={() => doLogin()}>Login!</IonButton>
+        <IonButton onClick={() => deleteEverything()}>Delete</IonButton>
       </IonContent>
     </IonPage>
   );

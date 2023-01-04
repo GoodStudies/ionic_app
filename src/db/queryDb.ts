@@ -24,16 +24,16 @@ export const getQuestionGroups = async () => {
 };
 
 export const deleteEverything = async () => {
-  // await AppDataSource.manager.clear(QuestionGroup);
-  // await AppDataSource.manager.clear(QuestionSubgroup);
-  // await AppDataSource.manager.clear(Answer);
-  // await AppDataSource.manager.clear(Question);
-  // await AppDataSource.manager.clear(Participant);
+  await AppDataSource.manager.clear(QuestionGroup);
+  await AppDataSource.manager.clear(QuestionSubgroup);
+  await AppDataSource.manager.clear(Answer);
+  await AppDataSource.manager.clear(Question);
+  await AppDataSource.manager.clear(Participant);
   console.log("deleted everything");
 };
 
 export const findAll = async () => {
-  const groups = await AppDataSource.manager.find(Answer);
+  const groups = await AppDataSource.manager.find(QuestionGroup);
   console.log("groups: ", groups);
 };
 

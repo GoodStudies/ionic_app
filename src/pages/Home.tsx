@@ -1,12 +1,12 @@
 import { IonButton } from "@ionic/react";
 import { get_groups } from "../api/endpoints";
-import { sendRequest } from "../api/getRequests";
+import { sendGetRequest } from "../api/getRequests";
 import PageLayout from "../components/PageLayout";
 import { createSubgroups } from "../db/createGroups";
 
 const HomeContent: React.FC = () => {
   const fetch = async () => {
-    const response = await sendRequest(get_groups);
+    const response = await sendGetRequest(get_groups);
     console.log(response[0].question_sub_groups);
   };
 

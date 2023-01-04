@@ -1,4 +1,4 @@
-import { sendRequest } from "../api/getRequests";
+import { sendGetRequest } from "../api/getRequests";
 import {
   get_groups,
   get_question_id,
@@ -12,7 +12,7 @@ import { QuestionMultipleChoice } from "../entity/QuestionMultipleChoice";
 
 export const test_request = async () => {
   try {
-    const data = await sendRequest(get_groups);
+    const data = await sendGetRequest(get_groups);
     console.log("subgroups length: ", data[0].question_sub_groups.length);
   } catch (err) {
     console.log("Error: ", err);
@@ -21,9 +21,8 @@ export const test_request = async () => {
 
 export const createGroups = async () => {
   try {
-    const data = await sendRequest(get_groups);
+    const data = await sendGetRequest(get_groups);
     for (let i = 0; i < data.length; i++) {
-      // if (!data[i].is_fixed) {
       let questionGroup = new QuestionGroup();
       questionGroup.id = data[i].id;
       questionGroup.name = data[i].name;
@@ -31,7 +30,6 @@ export const createGroups = async () => {
       questionGroup.question_subgroups = [];
       await AppDataSource.manager.save(questionGroup);
       createSubgroups(data[i].question_sub_groups, questionGroup);
-      // }
     }
   } catch (err) {
     console.log("Error while creating questionGroups: ", err);
@@ -65,8 +63,8 @@ export const createSubgroups = async (
 export const createQuestions = async (questionSubgroup: QuestionSubgroup) => {
   try {
     // add the id at the end of api endpoint
-    const data = await sendRequest(
-      get_subgroups_id + questionSubgroup.id.toString()
+    const data = await sendGetRequest(
+      get_subgroups_id + "/" + questionSubgroup.id.toString()
     );
     for (let i = 0; i < data.questions.length; i++) {
       let question = new Question();
@@ -78,7 +76,7 @@ export const createQuestions = async (questionSubgroup: QuestionSubgroup) => {
       question.answers = [];
       await AppDataSource.manager.save(question);
       questionSubgroup.questions.push(question);
-      createMultipleChoiceQuestions(question);
+      //   createMultipleChoiceQuestions(question);
     }
     await AppDataSource.manager.save(questionSubgroup);
   } catch (err) {
@@ -89,7 +87,7 @@ export const createQuestions = async (questionSubgroup: QuestionSubgroup) => {
 // create mutliple choice questions for a question, if any
 export const createMultipleChoiceQuestions = async (question: Question) => {
   try {
-    const data = await sendRequest(get_question_id + question.id.toString());
+    const data = await sendGetRequest(get_question_id + question.id.toString());
     for (let i = 0; i < data.question_multiple_choice.length; i++) {
       let mpQuestion = new QuestionMultipleChoice();
       mpQuestion.id = data.question_multiple_choice[i].id;
