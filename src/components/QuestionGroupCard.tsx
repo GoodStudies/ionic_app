@@ -1,15 +1,18 @@
 import {
-  IonButton,
   IonCard,
-  IonCheckbox,
   IonItem,
   IonLabel,
   IonToast,
   useIonModal,
 } from "@ionic/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getQuestions, getSubgroupAnswers, getSubgroups } from "../db/queryDb";
+import { Participant } from "../entity/Participant";
+import { Question } from "../entity/Question";
 import { QuestionGroup } from "../entity/QuestionGroup";
+import { QuestionSubgroup } from "../entity/QuestionSubgroup";
 import DisciplineModal from "./DisciplineModal";
+import { useParticipant } from "./ParticipantContext";
 
 interface CardItemProps {
   questionGroup: QuestionGroup;
@@ -21,29 +24,86 @@ interface CardProps {
 
 const QuestionGroupCardItem: React.FC<CardItemProps> = ({ questionGroup }) => {
   const [toast, setToast] = useState(false);
-  const [data, setData] = useState(false);
+  const [checkmark, setCheckmark] = useState(false);
+  const [test, setTest] = useState(false);
+  const [subgroups, setSubgroups] = useState<QuestionSubgroup[]>([]);
+  const [questions, setQuestions] = useState<Question[]>([]);
+  const [answers, setAnswers] = useState<string[]>([]);
   const [present, dismiss] = useIonModal(DisciplineModal, {
-    dismiss: (data: boolean) => onDismiss(data),
+    dismiss: (test: boolean) => onDismiss(test),
     questionGroup: questionGroup,
   });
+  const { selectedParticipant, setSelectedParticipant } = useParticipant();
 
   const modalOptions = {
     onDidDismiss: () => dismiss(),
   };
 
-  const onDismiss = (data: boolean) => {
-    // if all questions of group are answered
-    setData(data);
+  const onDismiss = (test: boolean) => {
+    setTest(test);
     dismiss();
     setToast(true);
   };
 
-  // here we need to implement the function, which checks whether all questions are answered
+  const defineSubgroups = async () => {
+    let result = await getSubgroups(questionGroup);
+    setSubgroups(result);
+  };
+
+  const getsubgroups = async () => {
+    for (let i = 0; i < subgroups.length; i++) {
+      let result = await getQuestions(subgroups[i]);
+      setQuestions(result);
+    }
+  };
+
+  const defineAnswers = async (participant: Participant) => {
+    let answers = await getSubgroupAnswers(participant, questions, subgroups);
+    setAnswers(answers);
+  };
+
+  const checkAnswers = (answers: string[]) => {
+    let check: number = 0;
+    for (let i = 0; i < answers.length; i++) {
+      if (answers[i] != "keine Angabe") {
+        check++;
+      }
+    }
+    if (check == answers.length) {
+      setCheckmark(true);
+    } else {
+      setCheckmark(false);
+    }
+  };
+
+  const updateAnswers = async () => {
+    await defineAnswers(selectedParticipant);
+    checkAnswers(answers);
+  };
+
+  // I am embarassed by this section
+  useEffect(() => {
+    defineSubgroups();
+  }, [selectedParticipant]);
+  useEffect(() => {
+    getsubgroups();
+  }, [subgroups]);
+  useEffect(() => {
+    defineAnswers(selectedParticipant);
+  }, [questions]);
+  useEffect(() => {
+    checkAnswers(answers);
+  }, [answers]);
+  useEffect(() => {
+    updateAnswers();
+    setTest(false);
+  }, [test]);
+
   return (
     <div>
       <IonItem class="item-card">
         <IonLabel onClick={() => present(modalOptions)} className="text-center">
-          {data == true ? (
+          {checkmark == true ? (
             <span>{questionGroup.name} ✅</span>
           ) : (
             questionGroup.name

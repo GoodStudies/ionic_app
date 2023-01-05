@@ -2,9 +2,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { bicycle, personAdd } from "ionicons/icons";
 import { format, parseISO } from "date-fns";
-import { Answer } from "../../entity/Answer";
-import { Question } from "../../entity/Question";
-import { trash, basketballOutline } from "ionicons/icons";
+import { trash } from "ionicons/icons";
 import { Participant } from "../../entity/Participant";
 import useOrientation from "../../hooks/useOrientation";
 import {
@@ -42,6 +40,7 @@ import OutlinedIconButton from "../OutlinedIconButton";
 import { useParticipantList } from "./ParticipantListContext";
 import { updateParticipant } from "../../db/updateParticipant";
 import { useParticipant } from "../ParticipantContext";
+import { getAnswers } from "../../db/queryDb";
 
 interface ParticipantListItemProps {
   participant: Participant;
@@ -52,13 +51,13 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
 }) => {
   const [, setParticipant] = useState<Participant>(participant);
   const [open, setOpen] = useState(false);
-  const [presentAlert] = useIonAlert();
   const [openDate, setOpenDate] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [showDeleteToast, setShowDeleteToast] = useState(false);
   const [answers, setAnswers] = useState<string[]>([]);
   const [value, setValue] = useState<string | null>("Auswaehlen");
   const { isPortrait } = useOrientation();
+  const [presentAlert] = useIonAlert();
   const { register, handleSubmit } = useForm();
   const { setParticipantList } = useParticipantList();
   const { setSelectedParticipant } = useParticipant();
@@ -69,8 +68,8 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
     setValue(formattedDate);
   };
 
-  const openModal = () => {
-    getAnswers(participant);
+  const openModal = async () => {
+    setAnswers(await getAnswers(participant, fixedQuestions));
     setOpen(true);
   };
 
@@ -92,30 +91,6 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
     // update participantList and let the UI rerender
     setParticipantList(updatedParticipantList);
     initParticipantList();
-  };
-
-  const getAnswers = async (participant: Participant) => {
-    let new_answers: string[] = [];
-    for (let i = 0; i < fixedQuestions.length; i++) {
-      const question = await AppDataSource.manager.find(Question, {
-        where: {
-          question: fixedQuestions[i].question_name,
-        },
-      });
-      const answer = await AppDataSource.manager.find(Answer, {
-        where: {
-          participant: participant,
-          question: question[0],
-        },
-      });
-      // if answer was not provided yet
-      if (answer[answer.length - 1] != undefined) {
-        new_answers.push(answer[answer.length - 1].value);
-      } else {
-        new_answers.push("keine Angabe");
-      }
-    }
-    setAnswers(new_answers);
   };
 
   const changePage = () => {
