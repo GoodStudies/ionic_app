@@ -91,7 +91,7 @@ export const getAnswers = async (
 export const getSubgroupAnswers = async (
   participant: Participant,
   questions: Question[],
-  subgroupQuestions: QuestionSubgroup[]
+  subgroupQuestions: QuestionSubgroup
 ) => {
   let new_answers: string[] = [];
   // iterate trough all questions inside the question group
@@ -99,7 +99,8 @@ export const getSubgroupAnswers = async (
     const question = await AppDataSource.manager.find(Question, {
       where: {
         question: questions[i].question,
-        questionSubgroup: subgroupQuestions[0],
+        // this is the bug. it always fetches the answers of the first subgroup
+        questionSubgroup: subgroupQuestions,
       },
     });
     const answer = await AppDataSource.manager.find(Answer, {

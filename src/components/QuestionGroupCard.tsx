@@ -58,7 +58,11 @@ const QuestionGroupCardItem: React.FC<CardItemProps> = ({ questionGroup }) => {
   };
 
   const defineAnswers = async (participant: Participant) => {
-    let answers = await getSubgroupAnswers(participant, questions, subgroups);
+    let answers = await getSubgroupAnswers(
+      participant,
+      questions,
+      subgroups[0]
+    );
     setAnswers(answers);
   };
 
@@ -76,9 +80,37 @@ const QuestionGroupCardItem: React.FC<CardItemProps> = ({ questionGroup }) => {
     }
   };
 
+  // if subgroup.length > 1
+  const checkSubgroupAnswers = async () => {
+    let check: number = 0;
+    let length: number = 0;
+    for (let i = 0; i < subgroups.length; i++) {
+      let answers = await getSubgroupAnswers(
+        selectedParticipant,
+        questions,
+        subgroups[i]
+      );
+      for (let j = 0; j < answers.length; j++) {
+        if (answers[j] != "keine Angabe") {
+          check++;
+        }
+        length++;
+      }
+    }
+    if (length == check) {
+      setCheckmark(true);
+    } else {
+      setCheckmark(false);
+    }
+  };
+
   const updateAnswers = async () => {
     await defineAnswers(selectedParticipant);
-    checkAnswers(answers);
+    if (subgroups.length > 1) {
+      checkSubgroupAnswers();
+    } else {
+      checkAnswers(answers);
+    }
   };
 
   // I am embarassed by this section
@@ -92,7 +124,11 @@ const QuestionGroupCardItem: React.FC<CardItemProps> = ({ questionGroup }) => {
     defineAnswers(selectedParticipant);
   }, [questions]);
   useEffect(() => {
-    checkAnswers(answers);
+    if (subgroups.length > 1) {
+      checkSubgroupAnswers();
+    } else {
+      checkAnswers(answers);
+    }
   }, [answers]);
   useEffect(() => {
     updateAnswers();

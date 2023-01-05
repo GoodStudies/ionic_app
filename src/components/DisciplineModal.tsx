@@ -1,4 +1,13 @@
-import { IonCol, IonContent, IonInput, IonItem } from "@ionic/react";
+import {
+  IonCol,
+  IonContent,
+  IonInput,
+  IonItem,
+  IonLabel,
+  IonList,
+  IonSelect,
+  IonSelectOption,
+} from "@ionic/react";
 import { useEffect, useState } from "react";
 import { getQuestions, getSubgroupAnswers, getSubgroups } from "../db/queryDb";
 import { Question } from "../entity/Question";
@@ -10,6 +19,7 @@ import { useForm } from "react-hook-form";
 import { createDisciplineAnswers } from "../db/createDisciplineAnswer";
 import { useParticipant } from "./ParticipantContext";
 import { Participant } from "../entity/Participant";
+import { AppDataSource } from "../App";
 
 interface ModalProps {
   questionGroup: QuestionGroup;
@@ -20,6 +30,7 @@ const DisciplineModal: React.FC<ModalProps> = ({ questionGroup, dismiss }) => {
   // every question group with name == subgroup name, needs to list the subgroup questions here
   // therefore, we need to fetch them here
   const [subgroups, setSubgroups] = useState<QuestionSubgroup[]>([]);
+  const [selectedSubgroup, setSelectedSubgroup] = useState<QuestionSubgroup>();
   const [questions, setQuestions] = useState<Question[]>([]);
   const [description, setDescription] = useState<string>("");
   const [answers, setAnswers] = useState<string[]>([]);
@@ -31,19 +42,29 @@ const DisciplineModal: React.FC<ModalProps> = ({ questionGroup, dismiss }) => {
     setSubgroups(result);
   };
 
-  const getSubgroupQuestions = async () => {
-    for (let i = 0; i < subgroups.length; i++) {
-      let result = await getQuestions(subgroups[i]);
-      setDescription(result[0].description);
-      setQuestions(result);
+  const getSubgroupQuestions = async (subgroup: QuestionSubgroup) => {
+    let result = await getQuestions(subgroup);
+    setDescription(result[0].description);
+    setQuestions(result);
+  };
+
+  const changeSubgroup = async (subgroupName: string) => {
+    let subgroup = await AppDataSource.manager.find(QuestionSubgroup, {
+      where: {
+        name: subgroupName,
+      },
+    });
+    if (subgroup[subgroup.length - 1]) {
+      getSubgroupQuestions(subgroup[subgroup.length - 1]);
+      setSelectedSubgroup(subgroup[subgroup.length - 1]);
     }
   };
 
-  const defineAnswers = async () => {
+  const defineAnswers = async (subgroup: QuestionSubgroup) => {
     const answers = await getSubgroupAnswers(
       selectedParticipant,
       questions,
-      subgroups
+      subgroup
     );
     setAnswers(answers);
   };
@@ -62,10 +83,15 @@ const DisciplineModal: React.FC<ModalProps> = ({ questionGroup, dismiss }) => {
     defineSubgroups();
   }, []);
   useEffect(() => {
-    getSubgroupQuestions();
+    getSubgroupQuestions(subgroups[0]);
   }, [subgroups]);
   useEffect(() => {
-    defineAnswers();
+    if (subgroups.length > 1) {
+      defineAnswers(selectedSubgroup!);
+    } else {
+      // if ony one subgroup
+      defineAnswers(subgroups[0]);
+    }
   }, [questions]);
 
   return (
@@ -78,9 +104,30 @@ const DisciplineModal: React.FC<ModalProps> = ({ questionGroup, dismiss }) => {
       ) : (
         <p className="text-transparent">null</p>
       )}
-      {subgroups.map((subgroup, index) => (
-        <p>{subgroup.name == questionGroup.name ? null : subgroup.name}</p>
-      ))}
+      {subgroups.length > 1 ? (
+        <div className="flex justify-center">
+          <IonList>
+            <IonItem lines="none">
+              <IonSelect
+                {...register("subgroup")}
+                interface="popover"
+                placeholder={subgroups[0].name}
+                onIonChange={(e) => changeSubgroup(e.detail.value)}
+              >
+                {subgroups.map((choice: QuestionSubgroup, index: number) => (
+                  <IonSelectOption
+                    key={index}
+                    value={choice.name}
+                    className="text-sm"
+                  >
+                    {choice.name}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonItem>
+          </IonList>
+        </div>
+      ) : null}
       <div className="h-3/4 grid content-around justify-center">
         {questions.map((question, index) => (
           <div className="flex justify-between">
