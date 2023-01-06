@@ -40,6 +40,7 @@ const DisciplineModal: React.FC<ModalProps> = ({ questionGroup, dismiss }) => {
   const defineSubgroups = async () => {
     let result = await getSubgroups(questionGroup);
     setSubgroups(result);
+    setSelectedSubgroup(result[0]);
   };
 
   const getSubgroupQuestions = async (subgroup: QuestionSubgroup) => {
@@ -69,6 +70,30 @@ const DisciplineModal: React.FC<ModalProps> = ({ questionGroup, dismiss }) => {
     setAnswers(answers);
   };
 
+  // if subgroup.length > 1
+  const checkSubgroupAnswers = async () => {
+    let check: number = 0;
+    let length: number = 0;
+    for (let i = 0; i < subgroups.length; i++) {
+      let answers = await getSubgroupAnswers(
+        selectedParticipant,
+        questions,
+        subgroups[i]
+      );
+      for (let j = 0; j < answers.length; j++) {
+        if (answers[j] != "keine Angabe") {
+          check++;
+        }
+        length++;
+      }
+    }
+    if (length == check) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   const onSubmit = async (
     data: any,
     selectedParticipant: Participant,
@@ -89,7 +114,7 @@ const DisciplineModal: React.FC<ModalProps> = ({ questionGroup, dismiss }) => {
     if (subgroups.length > 1) {
       defineAnswers(selectedSubgroup!);
     } else {
-      // if ony one subgroup
+      // if only one subgroup
       defineAnswers(subgroups[0]);
     }
   }, [questions]);

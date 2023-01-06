@@ -13,6 +13,7 @@ import { QuestionGroup } from "../entity/QuestionGroup";
 import { QuestionSubgroup } from "../entity/QuestionSubgroup";
 import DisciplineModal from "./DisciplineModal";
 import { useParticipant } from "./ParticipantContext";
+import SpecialModal from "./SpecialModal";
 
 interface CardItemProps {
   questionGroup: QuestionGroup;
@@ -25,6 +26,7 @@ interface CardProps {
 const QuestionGroupCardItem: React.FC<CardItemProps> = ({ questionGroup }) => {
   const [toast, setToast] = useState(false);
   const [checkmark, setCheckmark] = useState(false);
+  // change the name of this state to something more fitting (i.e update)
   const [test, setTest] = useState(false);
   const [subgroups, setSubgroups] = useState<QuestionSubgroup[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -33,15 +35,29 @@ const QuestionGroupCardItem: React.FC<CardItemProps> = ({ questionGroup }) => {
     dismiss: (test: boolean) => onDismiss(test),
     questionGroup: questionGroup,
   });
+  const [presentSpecial, dismissSpecial] = useIonModal(SpecialModal, {
+    dismissSpecial: (test: boolean) => onDismissSpecial(test),
+    questionGroup: questionGroup,
+  });
   const { selectedParticipant, setSelectedParticipant } = useParticipant();
 
   const modalOptions = {
     onDidDismiss: () => dismiss(),
   };
 
+  const specialModalOptions = {
+    onDidDismiss: () => dismissSpecial(),
+  };
+
   const onDismiss = (test: boolean) => {
     setTest(test);
     dismiss();
+    setToast(true);
+  };
+
+  const onDismissSpecial = (test: boolean) => {
+    setTest(test);
+    dismissSpecial();
     setToast(true);
   };
 
@@ -138,7 +154,14 @@ const QuestionGroupCardItem: React.FC<CardItemProps> = ({ questionGroup }) => {
   return (
     <div>
       <IonItem class="item-card">
-        <IonLabel onClick={() => present(modalOptions)} className="text-center">
+        <IonLabel
+          onClick={() =>
+            questionGroup.name == "Monopedales Hüpfen"
+              ? presentSpecial(specialModalOptions)
+              : present(modalOptions)
+          }
+          className="text-center"
+        >
           {checkmark == true ? (
             <span>{questionGroup.name} ✅</span>
           ) : (

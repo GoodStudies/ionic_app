@@ -4,6 +4,7 @@ import { Participant } from "../entity/Participant";
 import { Question } from "../entity/Question";
 import { QuestionGroup } from "../entity/QuestionGroup";
 import { QuestionSubgroup } from "../entity/QuestionSubgroup";
+import { groups } from "../App";
 
 // what's the purpose of this one again?
 // I guess it only is/was relevant for testing purposes
@@ -119,4 +120,26 @@ export const getSubgroupAnswers = async (
     }
   }
   return new_answers;
+};
+
+export const checkAllAnswers = async (participant: Participant) => {
+  const questionGroups = groups.slice(1, groups.length);
+  for (let i = 0; i < questionGroups.length; i++) {
+    let subgroups = await getSubgroups(questionGroups[i]);
+    for (let j = 0; j < subgroups.length; j++) {
+      let questions = await getQuestions(subgroups[j]);
+      for (let k = 0; k < questions.length; k++) {
+        let answers = await AppDataSource.manager.find(Answer, {
+          where: {
+            participant: participant,
+            question: questions[k],
+          },
+        });
+        if (answers.length == 0) {
+          return false;
+        }
+      }
+    }
+  }
+  return true;
 };

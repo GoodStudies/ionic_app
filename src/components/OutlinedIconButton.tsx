@@ -3,7 +3,7 @@ import { IonButton, IonIcon } from "@ionic/react";
 interface OutlinedIconButtonProps {
   onClick?: () => void;
   label: string;
-  icon: any;
+  icon?: any;
   style: any;
 }
 
@@ -15,8 +15,8 @@ const OutlinedIconButton: React.FC<OutlinedIconButtonProps> = ({
 }) => {
   return (
     <IonButton className={style} color={"white"} onClick={onClick}>
-      <IonIcon icon={icon} className="text-sm" />
-      <span className="pl-1">{label}</span>
+      {icon ? <IonIcon icon={icon} className="text-sm" /> : null}
+	  {icon ? <span className="pl-1">{label}</span> : <span>{label}</span>}
     </IonButton>
   );
 };

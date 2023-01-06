@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { bicycle, personAdd } from "ionicons/icons";
 import { format, parseISO } from "date-fns";
@@ -40,7 +40,7 @@ import OutlinedIconButton from "../OutlinedIconButton";
 import { useParticipantList } from "./ParticipantListContext";
 import { updateParticipant } from "../../db/updateParticipant";
 import { useParticipant } from "../ParticipantContext";
-import { getAnswers } from "../../db/queryDb";
+import { checkAllAnswers, getAnswers } from "../../db/queryDb";
 
 interface ParticipantListItemProps {
   participant: Participant;
@@ -56,11 +56,12 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
   const [showDeleteToast, setShowDeleteToast] = useState(false);
   const [answers, setAnswers] = useState<string[]>([]);
   const [value, setValue] = useState<string | null>("Auswaehlen");
+  const [checkmark, setCheckmark] = useState<boolean>(false);
   const { isPortrait } = useOrientation();
   const [presentAlert] = useIonAlert();
   const { register, handleSubmit } = useForm();
   const { setParticipantList } = useParticipantList();
-  const { setSelectedParticipant } = useParticipant();
+  const { selectedParticipant, setSelectedParticipant } = useParticipant();
   const navigation = useIonRouter();
 
   const onIonChangeHandler = (value: string | string[] | null) => {
@@ -94,13 +95,18 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
   };
 
   const changePage = () => {
-    console.log("changePage");
     setSelectedParticipant(participant);
     navigation.push("/questionGroups", "forward");
   };
 
+  useEffect(() => {
+    checkAllAnswers(participant).then((result) => {
+      setCheckmark(result);
+    });
+  }, [navigation]);
+
   return (
-    <IonCard className="p-1 m-4">
+    <IonCard className="p-1 m-4" color={checkmark ? "success" : ""}>
       <IonRow>
         <IonCol>{participant.firstname}</IonCol>
         <IonCol>{participant.lastname}</IonCol>

@@ -30,6 +30,16 @@
   font-size: smaller;
 }
 
+.login-button {
+  background-color: #2a6bf2;
+  padding: 4px;
+  color: #ffffff;
+  border-radius: 5px;
+  border: 1px solid #ffffff;
+  font-size: smaller;
+  font-weight: 600;
+}
+
 .custom-button-delete {
   padding: 4px;
   color: #ce0000;
@@ -41,6 +51,15 @@
 .date-picker {
   padding: 4px;
   color: #2a6bf2;
+}
+
+.checkbox {
+  --size: 17px;
+  --border-radius: 8px;
+}
+
+.item {
+	--background-activated: #ffffff;
 }
 
 .item-card {
