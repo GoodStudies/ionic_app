@@ -14,7 +14,6 @@ import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { QuestionSubgroup } from "./entity/QuestionSubgroup";
 import Participants from "./pages/Participants";
 import Menu from "./pages/Menu";
-import Login from "./pages/Login";
 import React from "react";
 
 /* Core CSS required for Ionic components to work properly */
@@ -110,7 +109,7 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route exact path="/" component={Login} />
+          <Route exact path="/" component={Home} />
           <Route exact path="/home" component={Home} />
           <Route exact path="/participants" component={Participants} />
           <Route exact path="/questionGroups" component={QuestionGroups} />

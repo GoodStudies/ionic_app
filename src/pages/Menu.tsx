@@ -15,7 +15,6 @@ const Menu: React.FC = () => {
   const paths = [
     { name: "Home", path: "/home" },
     { name: "Teilnehmer", path: "/participants" },
-    { name: "Disziplinen", path: "/questionGroups" },
   ];
 
   return (
