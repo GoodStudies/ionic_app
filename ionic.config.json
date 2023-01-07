@@ -3,5 +3,11 @@
   "integrations": {
     "capacitor": {}
   },
+  "proxies": [
+    {
+      "path": "/",
+      "proxyUrl": "https://api.goodstudies.de/"
+    }
+  ],
   "type": "react"
 }

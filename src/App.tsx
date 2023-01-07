@@ -43,7 +43,7 @@ import { useParticipantList } from "./components/ParticipantList/ParticipantList
 import { fetchFixedQuestions } from "./api/getRequests";
 import { get_fixed } from "./api/endpoints";
 import QuestionGroups from "./pages/QuestionGroups";
-import { fetchAndCreateStudyQuestions, test_request } from "./db/createGroups";
+import { fetchAndCreateStudyQuestions } from "./db/createGroups";
 
 export let AppDataSource: DataSource;
 export let fixedQuestions: any[] = [];
@@ -92,7 +92,7 @@ AppDataSource.initialize()
     initParticipantList();
     getAllQuestionGroups();
     // this needs to be called once, when the app is "initialized @ school"
-    // fetchAndCreateStudyQuestions();
+    fetchAndCreateStudyQuestions();
   })
   .catch((err) => {
     console.error("Error during Data Source initialization", err);
@@ -109,7 +109,7 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route exact path="/" component={Home} />
+          <Route exact path="/" component={Participants} />
           <Route exact path="/home" component={Home} />
           <Route exact path="/participants" component={Participants} />
           <Route exact path="/questionGroups" component={QuestionGroups} />

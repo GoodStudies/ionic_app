@@ -10,6 +10,10 @@ const config: CapacitorConfig = {
       iosDatabaseLocation: "Library/CapacitorDatabase",
     },
   },
+  server: {
+      hostname: "localhost:8100",
+      androidScheme: "http"
+    }
 };
 
 export default config;

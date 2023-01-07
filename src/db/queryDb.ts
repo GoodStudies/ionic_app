@@ -31,7 +31,7 @@ export const deleteEverything = async () => {
   await AppDataSource.manager.clear(Answer);
   await AppDataSource.manager.clear(Question);
   await AppDataSource.manager.clear(Participant);
-  console.log("deleted everything");
+  console.log("DELETED EVERYTHING");
 };
 
 export const findAll = async () => {
