@@ -28,8 +28,9 @@ const ParticipantModal = ({
 }: {
   onDismiss: (data?: string | null | undefined | number, role?: string) => void;
 }) => {
+  const [date, setDate] = useState<any>();
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState<string | string[] | null>("Auswaehlen");
+  const [formattedDate, setFormattedDate] = useState<string | string[] | null>("Auswaehlen");
   const { isPortrait } = useOrientation();
   const { register, handleSubmit } = useForm();
 
@@ -38,8 +39,9 @@ const ParticipantModal = ({
   };
 
   const onIonChangeHandler = (value: string | string[] | null) => {
+    setDate(value);
     let formattedDate = format(parseISO(value as string), "dd.MM.yyyy");
-    setValue(formattedDate);
+    setFormattedDate(formattedDate);
   };
 
   const onSubmit = async (data: any, birthdate: string | undefined) => {
@@ -60,7 +62,7 @@ const ParticipantModal = ({
           <IonButtons slot="end">
             <IonButton
               onClick={handleSubmit((data) => {
-                onSubmit(data, value?.toString());
+                onSubmit(data, formattedDate?.toString());
               })}
             >
               Speichern
@@ -95,7 +97,7 @@ const ParticipantModal = ({
               {question.question_name == "Geburtsdatum" ? (
                 <>
                   <button className="date-picker" onClick={() => setOpen(true)}>
-                    {value}
+                    {formattedDate}
                   </button>
                 </>
               ) : (
@@ -116,7 +118,7 @@ const ParticipantModal = ({
         >
           <IonDatetime
             onIonChange={(e) => onIonChangeHandler(e.detail.value || "")}
-            value={value}
+            value={date}
             size={"cover"}
             showDefaultButtons={true}
             preferWheel={true}

@@ -7,47 +7,19 @@ import {
   IonLabel,
   IonList,
   IonPage,
-  IonToast,
   useIonAlert,
   useIonLoading,
   useIonRouter,
 } from "@ionic/react";
-import { useState } from "react";
+import { login } from "../api/login";
 import { useForm } from "react-hook-form";
-import { loginRequest } from "../api/endpoints";
 import OutlinedIconButton from "../components/OutlinedIconButton";
 
-const Home: React.FC = () => {
+const Login: React.FC = () => {
   const { register, handleSubmit } = useForm();
   const [presentAlert] = useIonAlert();
   const [present, dismiss] = useIonLoading();
   const navigation = useIonRouter();
-
-  const login = async (body: any) => {
-    try {
-      const response = await fetch(loginRequest, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(body),
-      });
-      if (response.status == 200) {
-        const result = await response.json();
-        // save the credentials
-        localStorage.setItem("username", body.username);
-        localStorage.setItem("password", body.password);
-        // save the access_token
-        localStorage.setItem("token", result.access_token);
-		loginSuccess();
-      } else {
-        loginFailed();
-      }
-      // const jwtToken = localStorage.getItem("token");
-    } catch (err) {
-      console.log("Error during login: ", err);
-    }
-  };
 
   const loginFailed = async () => {
     present({
@@ -55,44 +27,27 @@ const Home: React.FC = () => {
       duration: 1000,
       spinner: "circles",
     }).then(() => {
-      setTimeout(() =>
-        presentAlert({
-          header: "Fehler",
-          subHeader: "Anmeldung fehlgeschlagen",
-          message: "Bitte überprüfen Sie Ihre Zugangsdaten",
-          buttons: ["OK"],
-        }), 1200
+      setTimeout(
+        () =>
+          presentAlert({
+            header: "Fehler",
+            subHeader: "Anmeldung fehlgeschlagen",
+            message: "Bitte überprüfen Sie Ihre Zugangsdaten",
+            buttons: ["OK"],
+          }),
+        1200
       );
     });
   };
 
   const loginSuccess = async () => {
     present({
-		message: "Einloggen...",
-		duration: 1000,
-		spinner: "circles",
-	}).then(() => {
-		setTimeout(() => navigation.push("/participants", "forward"), 1200);
-	})
-  }
-
-  // called if request returns 401 => if (response.status == 401)
-  const reauthenticate = async () => {
-    const username = localStorage.getItem("username");
-    const password = localStorage.getItem("password");
-    const response = await fetch(loginRequest, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        username: username,
-        password: password,
-        rememberMe: false,
-      }),
+      message: "Einloggen...",
+      duration: 1000,
+      spinner: "circles",
+    }).then(() => {
+      setTimeout(() => navigation.push("/participants", "forward"), 1200);
     });
-    const result = await response.json();
-    localStorage.setItem("token", result.access_token);
   };
 
   return (
@@ -112,30 +67,34 @@ const Home: React.FC = () => {
             <IonList className="flex justify-center">
               <div>
                 <IonItem lines="none">
-                  <IonLabel position="stacked" color="primary">
-                    Benutzername
-                  </IonLabel>
+                  <div className="pb-2">
+                    <IonLabel position="stacked" color="primary">
+                      Benutzername
+                    </IonLabel>
+                  </div>
                   <div className="border-2 border-blue-400 rounded-xl pl-2">
                     <IonInput color={"primary"} {...register("username")} />
                   </div>
                 </IonItem>
                 <IonItem lines="none">
-                  <IonLabel position="stacked" color="primary">
-                    Passwort
-                  </IonLabel>
+                  <div className="pb-2">
+                    <IonLabel position="stacked" color="primary">
+                      Passwort
+                    </IonLabel>
+                  </div>
                   <div className="border-2 border-blue-400 rounded-xl pl-2">
                     <IonInput type="password" {...register("password")} />
                   </div>
                 </IonItem>
               </div>
             </IonList>
-            <div className="flex justify-center pt-6">
-              <IonItem lines="none" className="item text-sm">
+            <div className="flex justify-center items-center pt-6">
+              <IonItem lines="none" className="item text-sm" mode="ios">
                 <IonCheckbox
                   className="checkbox"
                   color={"primary"}
                 ></IonCheckbox>
-                <IonLabel color={"primary"}>Eingeloggt bleiben</IonLabel>
+                  <IonLabel color={"primary"}>Eingeloggt bleiben</IonLabel>
               </IonItem>
               <IonItem lines="none" className="text-sm">
                 <IonLabel color={"primary"} className="underline">
@@ -146,7 +105,7 @@ const Home: React.FC = () => {
             <div className="flex justify-center pt-4">
               <OutlinedIconButton
                 onClick={handleSubmit((data) => {
-                  login(data);
+                  login(data, loginSuccess, loginFailed);
                 })}
                 label={"Einloggen"}
                 style={"login-button"}
@@ -160,4 +119,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default Login;

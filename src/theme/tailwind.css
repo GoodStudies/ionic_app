@@ -31,7 +31,6 @@
 
 .login-button {
   background-color: #2a6bf2;
-  padding: 4px;
   color: #ffffff;
   border-radius: 5px;
   border: 1px solid #ffffff;
@@ -52,8 +51,9 @@
 }
 
 .checkbox {
-  --size: 17px;
+  --size: 15px;
   --border-radius: 8px;
+  --border-color: #2a6bf2;
 }
 
 .item {

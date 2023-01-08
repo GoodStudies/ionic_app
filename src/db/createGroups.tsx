@@ -1,4 +1,4 @@
-import { sendGetRequest } from "../api/getRequests";
+import { sendGetRequest } from "../api/request";
 import {
   get_groups,
   get_question_id,

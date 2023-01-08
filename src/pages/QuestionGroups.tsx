@@ -1,5 +1,4 @@
-import { IonButton } from "@ionic/react";
-import { useEffect } from "react";
+import { useIonRouter } from "@ionic/react";
 import { groups } from "../App";
 import PageLayout from "../components/PageLayout";
 import { useParticipant } from "../components/ParticipantContext";
@@ -7,12 +6,19 @@ import QuestionGroupCard from "../components/QuestionGroupCard";
 
 const QuestionGroupsContent: React.FC = () => {
   const { selectedParticipant, setSelectedParticipant } = useParticipant();
+  const navigation = useIonRouter();
   const name =
     selectedParticipant == null
       ? "Che Plan"
       : selectedParticipant.firstname + " " + selectedParticipant.lastname;
   // group list without fixed
   const newGroups = groups.slice(1, groups.length);
+
+  document.addEventListener('ionBackButton', (ev: any) => {
+	ev.detail.register(10, () => {
+	  navigation.goBack();
+	});
+  });
 
   return (
     <>

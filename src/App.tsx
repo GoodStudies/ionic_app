@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Route } from "react-router-dom";
 import { IonReactRouter } from "@ionic/react-router";
-import Home from "./pages/Home";
+import Home from "./pages/Login";
 import "reflect-metadata";
 import { CapacitorSQLite, SQLiteConnection } from "@capacitor-community/sqlite";
 import { DataSource } from "typeorm";
@@ -10,10 +10,11 @@ import { Answer } from "./entity/Answer";
 import { Question } from "./entity/Question";
 import { QuestionGroup } from "./entity/QuestionGroup";
 import { QuestionMultipleChoice } from "./entity/QuestionMultipleChoice";
-import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
+import { IonApp, IonRouterOutlet, setupIonicReact, useIonRouter } from "@ionic/react";
 import { QuestionSubgroup } from "./entity/QuestionSubgroup";
 import Participants from "./pages/Participants";
 import React from "react";
+import { Network } from "@capacitor/network";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -39,10 +40,10 @@ import "./theme/tailwind.css";
 import { useParticipantList } from "./components/ParticipantList/ParticipantListContext";
 
 /* API */
-import { fetchFixedQuestions } from "./api/getRequests";
+import { fetchFixedQuestions } from "./api/fetch";
 import { get_fixed } from "./api/endpoints";
 import QuestionGroups from "./pages/QuestionGroups";
-import { fetchAndCreateStudyQuestions } from "./db/createGroups";
+import Login from "./pages/Login";
 
 export let AppDataSource: DataSource;
 export let fixedQuestions: any[] = [];
@@ -58,7 +59,7 @@ AppDataSource = new DataSource({
   database: "new_db",
   // this broke everything!
   // needs to be false in production; need to figure out migrations until then
-  synchronize: true,
+  synchronize: false,
   logging: true,
   migrations: ["dist/src/db/migration/*.js"],
   entities: [
@@ -100,6 +101,10 @@ AppDataSource.initialize()
 const App: React.FC = () => {
   const { setParticipantList } = useParticipantList();
 
+  Network.addListener('networkStatusChange', status => {
+	console.log('Network status changed', status.connectionType);
+  });
+
   useEffect(() => {
     setParticipantList(participantList);
   }, [participantList]);
@@ -108,8 +113,8 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route exact path="/" component={Home} />
-          <Route exact path="/home" component={Home} />
+          <Route exact path="/" component={Login} />
+          <Route exact path="/home" component={Login} />
           <Route exact path="/participants" component={Participants} />
           <Route exact path="/questionGroups" component={QuestionGroups} />
         </IonRouterOutlet>
