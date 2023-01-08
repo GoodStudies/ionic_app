@@ -106,18 +106,18 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
   }, [navigation]);
 
   return (
-    <IonCard className="p-1 m-4" color={checkmark ? "success" : ""}>
+	  <IonCard className={checkmark ? "p-1 m-4 border-2 border-green-400" : "p-1 m-4"}>
       <IonRow>
         <IonCol>{participant.firstname}</IonCol>
         <IonCol>{participant.lastname}</IonCol>
         <IonCol>{participant.birthdate}</IonCol>
-        <IonCol className="italic text-[#2A6BF2]" push="1" onClick={openModal}>
+        <IonCol className="italic text-[#2A6BF2]" push="2" onClick={openModal}>
           bearbeiten
           <IonIcon icon={personAdd}></IonIcon>
         </IonCol>
         <IonCol
           className="italic text-[#2A6BF2]"
-          push="0.5"
+          push="1"
           onClick={changePage}
         >
           aufnehmen
@@ -130,7 +130,7 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
       >
         <IonPage>
           <IonHeader>
-            <IonToolbar>
+            <IonToolbar mode="ios">
               <IonButtons slot="start">
                 <IonButton
                   color="medium"

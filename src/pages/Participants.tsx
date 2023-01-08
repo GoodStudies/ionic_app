@@ -12,7 +12,6 @@ import { useState } from "react";
 import ParticipantModal from "../components/ParticipantModal";
 import { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
 import { participantList } from "../App";
-import { deleteEverything } from "../db/queryDb";
 
 const ParticipantsTable: React.FC = () => {
   return (

@@ -23,7 +23,6 @@
 }
 
 .custom-button {
-  padding: 4px;
   color: #2a6bf2;
   border-radius: 5px;
   border: 1px solid #2a6bf2;
@@ -41,7 +40,6 @@
 }
 
 .custom-button-delete {
-  padding: 4px;
   color: #ce0000;
   border-radius: 5px;
   border: 1px solid #ce0000;

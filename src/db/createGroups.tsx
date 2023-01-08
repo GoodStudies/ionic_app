@@ -174,7 +174,6 @@ export const createMultipleChoiceQuestions = async (question: Question) => {
 
 // fetches all questions (except fixed atm)
 export const fetchAndCreateStudyQuestions = async () => {
-  deleteEverything().then(async () => {
     try {
       await createGroups().then(() => {
         console.log("fetched and created the whole study");
@@ -182,5 +181,4 @@ export const fetchAndCreateStudyQuestions = async () => {
     } catch (err) {
       console.log("Error while fetching and creating the study: ", err);
     }
-  });
 };

@@ -13,7 +13,6 @@ import { QuestionMultipleChoice } from "./entity/QuestionMultipleChoice";
 import { IonApp, IonRouterOutlet, setupIonicReact } from "@ionic/react";
 import { QuestionSubgroup } from "./entity/QuestionSubgroup";
 import Participants from "./pages/Participants";
-import Menu from "./pages/Menu";
 import React from "react";
 
 /* Core CSS required for Ionic components to work properly */
@@ -92,7 +91,7 @@ AppDataSource.initialize()
     initParticipantList();
     getAllQuestionGroups();
     // this needs to be called once, when the app is "initialized @ school"
-    fetchAndCreateStudyQuestions();
+    // fetchAndCreateStudyQuestions();
   })
   .catch((err) => {
     console.error("Error during Data Source initialization", err);
@@ -109,7 +108,7 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route exact path="/" component={Participants} />
+          <Route exact path="/" component={Home} />
           <Route exact path="/home" component={Home} />
           <Route exact path="/participants" component={Participants} />
           <Route exact path="/questionGroups" component={QuestionGroups} />

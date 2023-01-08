@@ -7,7 +7,7 @@ export const createParticipant = async (
   data: any,
   birthdate: string | undefined
 ) => {
-  let answer;
+  let answer: Answer;
   // create the participant
   await AppDataSource.createQueryBuilder()
     .insert()
@@ -20,7 +20,6 @@ export const createParticipant = async (
       },
     ])
     .execute();
-  console.log("SUCCESSFULLY CREATED PARTICIPANT");
   // get the participant
   const participant = await AppDataSource.getRepository(Participant)
     .createQueryBuilder("participant")
@@ -29,51 +28,25 @@ export const createParticipant = async (
       lastname: data["Nachname"],
     })
     .getOne();
-  console.log("THE FOUND PARTICIPANT IS: ", participant);
   // create the answers
   for (let i = 0; i < fixedQuestions.length; i++) {
     if (fixedQuestions[i].question_name == "Geburtsdatum") {
-      await AppDataSource.createQueryBuilder()
-        .insert()
-        .into(Answer)
-        .values([
-          {
-            value: birthdate == "Auswaehlen" ? "keine Angabe" : birthdate,
-            participant: participant!,
-          },
-        ])
-        .execute();
+      answer = new Answer();
+      answer.value = birthdate == "Auswaehlen" ? "keine Angabe" : birthdate!;
+	  answer.participant = participant!;
+    } else {
+      answer = new Answer();
+      answer.value = data[fixedQuestions[i].question_name];
+      answer.participant = participant!;
     }
-    await AppDataSource.createQueryBuilder()
-      .insert()
-      .into(Answer)
-      .values([
-        {
-          value: data[fixedQuestions[i].question_name],
-          participant: participant!,
-        },
-      ])
-      .execute();
-    let test = await AppDataSource.getRepository(Question)
-      .createQueryBuilder()
-	  .select("question")
-	  .from(Question, "question")
+    let question = await AppDataSource.getRepository(Question)
+      .createQueryBuilder("question")
       .where("question.question = :question", {
-        question: "Vorname",
+        question: fixedQuestions[i].question_name,
       })
       .getOne();
-    answer = await AppDataSource.getRepository(Answer)
-      .createQueryBuilder("answer")
-      .where("answer.participant = :participant", { participant: participant! })
-      .andWhere("answer.value = :value", {
-        value: data[fixedQuestions[i].question_name],
-      })
-      .getOne();
-    // console.log("THE ANSWER IS: ", answer!.value);
-	console.log("CURRENT INDEX: ", i);
-    console.log("THE QUESTION IS: ", test!.question);
-    // answer!.question = question!;
+    answer!.question = question!;
+    await AppDataSource.manager.save(answer);
   }
-  console.log("SUCCESSFULLY CREATED ANSWERS");
-  //   participantList.push(participant);
+  participantList.push(participant!);
 };

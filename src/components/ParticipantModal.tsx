@@ -50,7 +50,7 @@ const ParticipantModal = ({
   return (
     <IonPage>
       <IonHeader>
-        <IonToolbar>
+        <IonToolbar mode="ios">
           <IonButtons slot="start">
             <IonButton color="medium" onClick={() => onDismiss(null, "cancel")}>
               Abbruch
