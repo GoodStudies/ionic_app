@@ -39,7 +39,7 @@ const QuestionGroupCardItem: React.FC<CardItemProps> = ({ questionGroup }) => {
     dismissSpecial: (test: boolean) => onDismissSpecial(test),
     questionGroup: questionGroup,
   });
-  const { selectedParticipant, setSelectedParticipant } = useParticipant();
+  const { selectedParticipant } = useParticipant();
 
   const modalOptions = {
     onDidDismiss: () => dismiss(),

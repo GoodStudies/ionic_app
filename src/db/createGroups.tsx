@@ -9,7 +9,6 @@ import { QuestionGroup } from "../entity/QuestionGroup";
 import { QuestionSubgroup } from "../entity/QuestionSubgroup";
 import { Question } from "../entity/Question";
 import { QuestionMultipleChoice } from "../entity/QuestionMultipleChoice";
-import { deleteEverything } from "./queryDb";
 
 export const createGroups = async () => {
   try {
@@ -46,15 +45,12 @@ export const createSubgroups = async (
 ) => {
   try {
     // fetch the questionGroup from the database
-	console.log("SUB LENGTH: ", subgroups.length);
     const questionGroup = await AppDataSource.getRepository(QuestionGroup)
       .createQueryBuilder("questionGroup")
       .where("questionGroup.name = :name", { name: questionGroupName })
       .getOne();
     console.log("Question Group ID: ", questionGroup?.id);
     for (let i = 0; i < subgroups.length; i++) {
-	//   console.log("TEST: ", subgroups[i].name + subgroups[i].id);
-      console.log("INSIDE CREATE SUB");
       // create the questionSubgroup
       await AppDataSource.createQueryBuilder()
         .insert()
@@ -68,17 +64,6 @@ export const createSubgroups = async (
           },
         ])
         .execute();
-      const questionSubgroup = await AppDataSource.getRepository(
-        QuestionSubgroup
-      )
-        .createQueryBuilder("questionSubgroup")
-        .where("questionSubgroup.name = :name", { name: subgroups[i].name })
-		.andWhere("questionSubgroup.id = :id", { id: subgroups[i].id })
-        .getOne();
-      console.log("NEW SUBGROUP IS:", questionSubgroup?.name);
-	  console.log("NEW SUBGROUP ID IS:", questionSubgroup?.id);
-      console.log("FOUND QUESTION GROUP:", questionGroup?.name);
-      //   questionGroup?.question_subgroups.push(questionSubgroup!);
       createQuestions(subgroups[i].name, subgroups[i].id);
     }
   } catch (err) {
@@ -97,15 +82,11 @@ export const createQuestions = async (questionSubgroupName: string, questionSubg
 	  .andWhere("questionSubgroup.id = :id", { id: questionSubgroupId })
       .getOne();
     // add the id at the end of api endpoint
-    console.log("SUB INSIDE Q: ", questionSubgroup!.name +  " " + questionSubgroup!.id.toString());
     const data = await sendGetRequest(
       get_subgroups_id + "/" + questionSubgroup!.id.toString()
     );
-    console.log("SUB ID: ", questionSubgroup!.id.toString());
-    console.log("DATA QUESTIONS :", data.questions.length + " " + data.id);
     for (let i = 0; i < data.questions.length; i++) {
       // create the question
-      console.log("INSIDE CREATE QUESTIONS");
       await AppDataSource.createQueryBuilder()
         .insert()
         .into(Question)
@@ -120,10 +101,6 @@ export const createQuestions = async (questionSubgroupName: string, questionSubg
           },
         ])
         .execute();
-      console.log(
-        "THE NAME OF THE QUESTION IS: ",
-        data.questions[i].question_name
-      );
       // fetch the question from the database
       const question = await AppDataSource.getRepository(Question)
         .createQueryBuilder("question")

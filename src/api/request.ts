@@ -1,5 +1,6 @@
 import { reauthenticate } from "./login";
 
+// possible infinite loop based on this logic, how to change it?
 export const sendGetRequest = async (req: string) => {
   try {
     const response = await fetch(req, {

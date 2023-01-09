@@ -39,9 +39,20 @@
 }
 
 .custom-button-delete {
+  position: absolute;
+  bottom: 32px;
   color: #ce0000;
   border-radius: 5px;
   border: 1px solid #ce0000;
+  font-size: smaller;
+}
+
+.modal-button {
+  position: absolute;
+  bottom: 32px;
+  color: #2a6bf2;
+  border-radius: 5px;
+  border: 1px solid #2a6bf2;
   font-size: smaller;
 }
 
@@ -57,7 +68,7 @@
 }
 
 .item {
-	--background-activated: #ffffff;
+  --background-activated: #ffffff;
 }
 
 .item-card {

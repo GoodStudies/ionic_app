@@ -6,25 +6,6 @@ import { QuestionGroup } from "../entity/QuestionGroup";
 import { QuestionSubgroup } from "../entity/QuestionSubgroup";
 import { groups } from "../App";
 
-// what's the purpose of this one again?
-// I guess it only is/was relevant for testing purposes
-export const getQuestionGroups = async () => {
-  const groups = await AppDataSource.manager.find(QuestionSubgroup, {
-    where: {
-      questionGroup: {
-        name: "Rueckwaerts Balancieren",
-      },
-    },
-  });
-  const question = await AppDataSource.manager.find(Question, {
-    where: {
-      questionSubgroup: {
-        name: "Seitliches Umsetzen",
-      },
-    },
-  });
-};
-
 export const deleteEverything = async () => {
   await AppDataSource.manager.clear(QuestionGroup);
   await AppDataSource.manager.clear(QuestionSubgroup);
@@ -100,7 +81,6 @@ export const getSubgroupAnswers = async (
     const question = await AppDataSource.manager.find(Question, {
       where: {
         question: questions[i].question,
-        // this is the bug. it always fetches the answers of the first subgroup
         questionSubgroup: subgroupQuestions,
       },
     });
@@ -143,3 +123,27 @@ export const checkAllAnswers = async (participant: Participant) => {
   }
   return true;
 };
+
+// somehow this doesn't seem to work properly
+export const createFixedQuestions = async (fixedQuestions: Question[]) => {
+	let group = await AppDataSource.manager.find(QuestionGroup, {
+		where: {
+			name: "fixed"
+		}
+	});
+	// the most recent group
+	const fixedGroup = group[group.length - 1];
+	console.log("FIXED GROUP FOUND", fixedGroup);
+	let subgroup = await AppDataSource.manager.find(QuestionSubgroup, {
+		where : {
+			questionGroup: fixedGroup
+		}
+	});
+	const fixedSubgroup = subgroup[subgroup.length - 1];
+	console.log("FIXED SUBGROUP FOUND", fixedSubgroup.name);
+	// for (let i = 0; i < fixedSubgroup.questions.length; i++) {
+	// 	fixedQuestions.push(fixedSubgroup.questions[i]);
+	// }
+	console.log("FIXED SUB LENGTH: ", fixedSubgroup.questions);
+	console.log("SUCCESSFULLY CREATED FIXED QUESTIONS");
+}

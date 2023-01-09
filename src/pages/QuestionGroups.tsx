@@ -14,6 +14,7 @@ const QuestionGroupsContent: React.FC = () => {
   // group list without fixed
   const newGroups = groups.slice(1, groups.length);
 
+  // fix this behaviour
   document.addEventListener('ionBackButton', (ev: any) => {
 	ev.detail.register(10, () => {
 	  navigation.goBack();

@@ -3,7 +3,6 @@ import {
   IonContent,
   IonInput,
   IonItem,
-  IonLabel,
   IonList,
   IonSelect,
   IonSelectOption,
@@ -35,7 +34,7 @@ const DisciplineModal: React.FC<ModalProps> = ({ questionGroup, dismiss }) => {
   const [description, setDescription] = useState<string>("");
   const [answers, setAnswers] = useState<string[]>([]);
   const { register, handleSubmit } = useForm();
-  const { selectedParticipant, setSelectedParticipant } = useParticipant();
+  const { selectedParticipant } = useParticipant();
 
   const defineSubgroups = async () => {
     let result = await getSubgroups(questionGroup);
@@ -70,30 +69,6 @@ const DisciplineModal: React.FC<ModalProps> = ({ questionGroup, dismiss }) => {
     setAnswers(answers);
   };
 
-  // if subgroup.length > 1
-  const checkSubgroupAnswers = async () => {
-    let check: number = 0;
-    let length: number = 0;
-    for (let i = 0; i < subgroups.length; i++) {
-      let answers = await getSubgroupAnswers(
-        selectedParticipant,
-        questions,
-        subgroups[i]
-      );
-      for (let j = 0; j < answers.length; j++) {
-        if (answers[j] != "keine Angabe") {
-          check++;
-        }
-        length++;
-      }
-    }
-    if (length == check) {
-      return true;
-    } else {
-      return false;
-    }
-  };
-
   const onSubmit = async (
     data: any,
     selectedParticipant: Participant,
@@ -120,7 +95,7 @@ const DisciplineModal: React.FC<ModalProps> = ({ questionGroup, dismiss }) => {
   }, [questions]);
 
   return (
-    <IonContent class="ion-padding">
+    <IonContent className="ion-padding">
       <h3 className="flex justify-center font-bold text-xl">
         {questionGroup.name}
       </h3>
@@ -153,7 +128,7 @@ const DisciplineModal: React.FC<ModalProps> = ({ questionGroup, dismiss }) => {
           </IonList>
         </div>
       ) : null}
-      <div className="h-3/4 grid content-around justify-center">
+      <div className="h-2/3 grid content-around justify-center">
         {questions.map((question, index) => (
           <div className="flex justify-between">
             <IonCol key={index}>
@@ -172,14 +147,14 @@ const DisciplineModal: React.FC<ModalProps> = ({ questionGroup, dismiss }) => {
           </div>
         ))}
       </div>
-      <div className="flex justify-center pt-6">
+      <div className="flex justify-center">
         <OutlinedIconButton
           onClick={handleSubmit((data) =>
             onSubmit(data, selectedParticipant, questions)
           )}
           label={"Speichern"}
           icon={save}
-          style={"custom-button"}
+          style={"modal-button"}
         />
       </div>
     </IonContent>

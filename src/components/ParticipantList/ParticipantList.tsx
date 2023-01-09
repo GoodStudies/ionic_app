@@ -1,4 +1,6 @@
 import { IonContent } from "@ionic/react";
+import { useEffect } from "react";
+import { useParticipantList } from "./ParticipantListContext";
 
 interface ParticipantListProps {
   items: any[];
@@ -9,6 +11,12 @@ const ParticipantList: React.FC<ParticipantListProps> = ({
   items: participantsList,
   component: Component,
 }) => {
+
+  const { newParticipantList } = useParticipantList();
+
+  useEffect(() => {
+  }, [newParticipantList])
+
   return (
     <IonContent>
       {participantsList.map((participant, i) => (

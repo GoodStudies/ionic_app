@@ -40,7 +40,7 @@ const SpecialModal: React.FC<ModalProps> = ({
   const [firstSubgroupAnswer, setFirstAnswer] = useState<string>();
   const [secondSubgroupAnswer, setSecondAnswer] = useState<string>();
   const { register, handleSubmit } = useForm();
-  const { selectedParticipant, setSelectedParticipant } = useParticipant();
+  const { selectedParticipant } = useParticipant();
 
   const defineSubgroups = async () => {
     let result = await getSubgroups(questionGroup);

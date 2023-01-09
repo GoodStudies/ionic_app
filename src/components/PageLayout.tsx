@@ -1,9 +1,6 @@
-import Menu from "../pages/Menu";
 import {
   IonContent,
   IonHeader,
-  IonMenuButton,
-  IonMenuToggle,
   IonPage,
   IonTitle,
   IonToolbar,
@@ -24,13 +21,10 @@ const PageLayout: React.FC<PageLayoutProps> = ({
 }) => {
   return (
     <>
-      <Menu />
       <IonPage id="main">
         <IonHeader>
           <IonToolbar mode="ios">
-            <IonMenuButton slot="start">
               <button className="menu ml-2 mt-1 w-8">svg</button>
-            </IonMenuButton>
             <IonTitle>{title}</IonTitle>
           </IonToolbar>
         </IonHeader>

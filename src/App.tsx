@@ -44,6 +44,7 @@ import { fetchFixedQuestions } from "./api/fetch";
 import { get_fixed } from "./api/endpoints";
 import QuestionGroups from "./pages/QuestionGroups";
 import Login from "./pages/Login";
+import { createFixedQuestions } from "./db/queryDb";
 
 export let AppDataSource: DataSource;
 export let fixedQuestions: any[] = [];
@@ -91,6 +92,7 @@ AppDataSource.initialize()
     console.log("Data Source has been initialized!");
     initParticipantList();
     getAllQuestionGroups();
+	createFixedQuestions(fixedQuestions);
     // this needs to be called once, when the app is "initialized @ school"
     // fetchAndCreateStudyQuestions();
   })
@@ -101,6 +103,8 @@ AppDataSource.initialize()
 const App: React.FC = () => {
   const { setParticipantList } = useParticipantList();
 
+  // the network status needs to be checked every time the app is opened
+  // if network == wifi and study == complete, the data should be send to the server
   Network.addListener('networkStatusChange', status => {
 	console.log('Network status changed', status.connectionType);
   });
@@ -113,7 +117,7 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route exact path="/" component={Login} />
+          <Route exact path="/" component={Participants} />
           <Route exact path="/home" component={Login} />
           <Route exact path="/participants" component={Participants} />
           <Route exact path="/questionGroups" component={QuestionGroups} />
