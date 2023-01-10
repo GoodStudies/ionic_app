@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { format, parseISO } from "date-fns";
 import useOrientation from "../hooks/useOrientation";
@@ -29,8 +29,8 @@ const ParticipantModal = ({
   onDismiss: (data?: string | null | undefined | number, role?: string) => void;
 }) => {
   const [date, setDate] = useState<any>();
-  const [open, setOpen] = useState(false);
   const [formattedDate, setFormattedDate] = useState<string | string[] | null>("Auswaehlen");
+  const [open, setOpen] = useState(false);
   const { isPortrait } = useOrientation();
   const { register, handleSubmit } = useForm();
 

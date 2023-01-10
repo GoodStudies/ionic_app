@@ -23,8 +23,7 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
   participant,
 }) => {
   const [, setParticipant] = useState<Participant>(participant);
-  const [showToast, setShowToast] = useState(false);
-  const [showDeleteToast, setShowDeleteToast] = useState(false);
+  const [showToast, setShowToast] = useState<boolean>(false);
   const [checkmark, setCheckmark] = useState<boolean>(false);
   const { setSelectedParticipant } = useParticipant();
   const navigation = useIonRouter();
@@ -42,7 +41,6 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
       setShowToast(true);
     } else if (mode == "delete") {
       dismiss();
-      setShowDeleteToast(true);
     } else {
       dismiss();
     }
@@ -62,8 +60,6 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
       setCheckmark(result);
     });
   }, [navigation]);
-
-  // need to call setAnswers(await getAnswers(participant, fixedQuestions)) together with present()
 
   return (
     <IonCard
@@ -91,13 +87,6 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
         isOpen={showToast}
         onDidDismiss={() => setShowToast(false)}
         message="Teilnehmer wurde erfolgreich aktualisiert"
-        duration={2000}
-      />
-      <IonToast
-        cssClass={"custom-toast"}
-        isOpen={showDeleteToast}
-        onDidDismiss={() => setShowDeleteToast(false)}
-        message="Teilnehmer wurde erfolgreich entfernt"
         duration={2000}
       />
     </IonCard>

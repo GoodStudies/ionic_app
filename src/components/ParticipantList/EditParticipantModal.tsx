@@ -16,7 +16,7 @@ import {
   IonToolbar,
   useIonAlert,
 } from "@ionic/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
 import { trash } from "ionicons/icons";
 import { useForm } from "react-hook-form";
@@ -27,6 +27,7 @@ import { QuestionMultipleChoice } from "../../entity/QuestionMultipleChoice";
 import OutlinedIconButton from "../OutlinedIconButton";
 import { useParticipantList } from "./ParticipantListContext";
 import useOrientation from "../../hooks/useOrientation";
+import { getAnswers } from "../../db/queryDb";
 
 interface ModalProps {
   participant: Participant;
@@ -39,7 +40,10 @@ const EditParticipantModal: React.FC<ModalProps> = ({
   fixedQuestions,
   dismiss,
 }) => {
-  const [value, setValue] = useState<string | null>("Auswaehlen");
+  const [date, setDate] = useState<any>();
+  const [formattedDate, setFormattedDate] = useState<string | null>(
+    participant.birthdate
+  );
   const { isPortrait } = useOrientation();
   const { register, handleSubmit } = useForm();
   const [answers, setAnswers] = useState<string[]>([]);
@@ -53,31 +57,37 @@ const EditParticipantModal: React.FC<ModalProps> = ({
     mode: string
   ) => {
     if (mode == "save") {
-      updateParticipant(data, birthdate, participant);
-      dismiss("save");
+      updateParticipant(data, birthdate, participant).then(() => {
+        dismiss("save");
+      });
     } else if (mode == "delete") {
-      deleteParticipant(participant);
-      dismiss("delete");
+      deleteParticipant(participant).then(() => {
+        dismiss("delete");
+      });
     } else {
       dismiss("cancel");
     }
   };
 
   const onIonChangeHandler = (value: string | string[] | null) => {
+    setDate(value);
     let formattedDate = format(parseISO(value as string), "dd.MM.yyyy");
-    setValue(formattedDate);
+    setFormattedDate(formattedDate);
   };
 
   const deleteParticipant = async (participant: Participant) => {
     await AppDataSource.manager.remove(participant);
-    var updatedParticipantList = participantList.filter(
-      () => participant.local_id != participant.local_id
-    );
-    console.log("deleted && removed participant from list!");
-    // update participantList and let the UI rerender
-    setParticipantList(updatedParticipantList);
-    initParticipantList();
+    initParticipantList().then(() => {
+      setParticipantList(participantList);
+    });
   };
+
+  useEffect(() => {
+    const defineAnswers = async () => {
+      setAnswers(await getAnswers(participant, fixedQuestions));
+    };
+    defineAnswers();
+  }, []);
 
   return (
     <IonPage>
@@ -86,7 +96,7 @@ const EditParticipantModal: React.FC<ModalProps> = ({
           <IonButtons slot="start">
             <IonButton
               color="medium"
-              onClick={() => onSubmit(null, value, "cancel")}
+              onClick={() => onSubmit(null, formattedDate, "cancel")}
             >
               Abbruch
             </IonButton>
@@ -94,7 +104,9 @@ const EditParticipantModal: React.FC<ModalProps> = ({
           <IonTitle>{`${participant.firstname} ${participant.lastname}`}</IonTitle>
           <IonButtons slot="end">
             <IonButton
-              onClick={handleSubmit((data) => onSubmit(data, value, "save"))}
+              onClick={handleSubmit((data) =>
+                onSubmit(data, formattedDate, "save")
+              )}
             >
               Speichern
             </IonButton>
@@ -131,7 +143,7 @@ const EditParticipantModal: React.FC<ModalProps> = ({
                     className="date-picker"
                     onClick={() => setOpenDate(true)}
                   >
-                    {value == "Auswaehlen" ? participant.birthdate : value}
+                    {formattedDate}
                   </button>
                 </>
               ) : (
@@ -143,6 +155,22 @@ const EditParticipantModal: React.FC<ModalProps> = ({
             </IonItem>
           )
         )}
+        <IonModal
+          isOpen={openDate}
+          onDidDismiss={() => setOpenDate(false)}
+          className={
+            isPortrait ? "modal-wrapper-vertical" : "modal-wrapper-horizontal"
+          }
+        >
+          <IonDatetime
+            onIonChange={(e) => onIonChangeHandler(e.detail.value || "")}
+            value={date}
+            size={"cover"}
+            showDefaultButtons={true}
+            preferWheel={true}
+            presentation="date"
+          />
+        </IonModal>
         <div className="flex justify-center mt-8">
           <OutlinedIconButton
             onClick={() =>
@@ -156,7 +184,7 @@ const EditParticipantModal: React.FC<ModalProps> = ({
                   {
                     text: "Bestätigen",
                     handler: () => {
-					onSubmit(null, null, "delete");
+                      onSubmit(null, null, "delete");
                     },
                   },
                 ],
@@ -167,22 +195,6 @@ const EditParticipantModal: React.FC<ModalProps> = ({
             label={"Teilnehmer entfernen"}
           />
         </div>
-        <IonModal
-          isOpen={openDate}
-          onDidDismiss={() => setOpenDate(false)}
-          className={
-            isPortrait ? "modal-wrapper-vertical" : "modal-wrapper-horizontal"
-          }
-        >
-          <IonDatetime
-            onIonChange={(e) => onIonChangeHandler(e.detail.value || "")}
-            value={value}
-            size={"cover"}
-            showDefaultButtons={true}
-            preferWheel={true}
-            presentation="date"
-          />
-        </IonModal>
       </IonContent>
     </IonPage>
   );

@@ -1,7 +1,6 @@
 import { useEffect } from "react";
 import { Route } from "react-router-dom";
 import { IonReactRouter } from "@ionic/react-router";
-import Home from "./pages/Login";
 import "reflect-metadata";
 import { CapacitorSQLite, SQLiteConnection } from "@capacitor-community/sqlite";
 import { DataSource } from "typeorm";
@@ -15,6 +14,7 @@ import { QuestionSubgroup } from "./entity/QuestionSubgroup";
 import Participants from "./pages/Participants";
 import React from "react";
 import { Network } from "@capacitor/network";
+import { fetchAndCreateStudyQuestions } from "./db/createGroups";
 
 /* Core CSS required for Ionic components to work properly */
 import "@ionic/react/css/core.css";
@@ -44,7 +44,7 @@ import { fetchFixedQuestions } from "./api/fetch";
 import { get_fixed } from "./api/endpoints";
 import QuestionGroups from "./pages/QuestionGroups";
 import Login from "./pages/Login";
-import { createFixedQuestions } from "./db/queryDb";
+import { createFixedQuestions, deleteEverything } from "./db/queryDb";
 
 export let AppDataSource: DataSource;
 export let fixedQuestions: any[] = [];
@@ -58,11 +58,9 @@ AppDataSource = new DataSource({
   type: "capacitor",
   driver: new SQLiteConnection(CapacitorSQLite),
   database: "new_db",
-  // this broke everything!
-  // needs to be false in production; need to figure out migrations until then
-  synchronize: false,
+  synchronize: true,
   logging: true,
-  migrations: ["dist/src/db/migration/*.js"],
+  migrations: ["src/migration/**/*.ts"],
   entities: [
     Participant,
     Answer,
@@ -92,9 +90,10 @@ AppDataSource.initialize()
     console.log("Data Source has been initialized!");
     initParticipantList();
     getAllQuestionGroups();
-	createFixedQuestions(fixedQuestions);
     // this needs to be called once, when the app is "initialized @ school"
     // fetchAndCreateStudyQuestions();
+	// createFixedQuestions(fixedQuestions);
+	// deleteEverything();
   })
   .catch((err) => {
     console.error("Error during Data Source initialization", err);
@@ -117,7 +116,7 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route exact path="/" component={Participants} />
+          <Route exact path="/" component={Login} />
           <Route exact path="/home" component={Login} />
           <Route exact path="/participants" component={Participants} />
           <Route exact path="/questionGroups" component={QuestionGroups} />

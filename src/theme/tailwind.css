@@ -39,8 +39,6 @@
 }
 
 .custom-button-delete {
-  position: absolute;
-  bottom: 32px;
   color: #ce0000;
   border-radius: 5px;
   border: 1px solid #ce0000;

@@ -9,28 +9,21 @@ import { QuestionGroup } from "../entity/QuestionGroup";
 import { QuestionSubgroup } from "../entity/QuestionSubgroup";
 import { Question } from "../entity/Question";
 import { QuestionMultipleChoice } from "../entity/QuestionMultipleChoice";
+import { deleteEverything } from "./queryDb";
 
 export const createGroups = async () => {
-  try {
-    // fetch all question groups
+	try {
+	// fetch all question groups
     const data = await sendGetRequest(get_groups);
-    console.log("DATA:", data);
     for (let i = 0; i < data.length; i++) {
-      console.log("INSIDE CREATE GROUPS");
-      await AppDataSource.createQueryBuilder()
-        .insert()
-        .into(QuestionGroup)
-        .values([
-          {
-            id: data[i].id,
-            name: data[i].name,
-            is_fixed: data[i].is_fixed,
-            question_subgroups: [],
-          },
-        ])
-        .execute();
+	  let group = new QuestionGroup();
+	  group.id = data[i].id;
+	  group.name = data[i].name;
+	  group.is_fixed = data[i].is_fixed;
+	  group.question_subgroups = [];
+	  await AppDataSource.manager.save(group);
       // I need to pass the questionGroup name to this function later on
-      createSubgroups(data[i].question_sub_groups, data[i].name);
+      createSubgroups(group, data[i].question_sub_groups);
     }
   } catch (err) {
     console.log("Error while creating questionGroups: ", err);
@@ -40,77 +33,52 @@ export const createGroups = async () => {
 // ignore the fixed subgroup here first. after everything is working, the fixed group + subgroup will be fetched inside this call as well
 // this function takes a questionGroup and creates all subgroups for that group
 export const createSubgroups = async (
-  subgroups: any,
-  questionGroupName: string
+  group: QuestionGroup,
+  subgroups: QuestionSubgroup[]
 ) => {
+  console.log("Subgroups Length: ", subgroups.length);
   try {
-    // fetch the questionGroup from the database
-    const questionGroup = await AppDataSource.getRepository(QuestionGroup)
-      .createQueryBuilder("questionGroup")
-      .where("questionGroup.name = :name", { name: questionGroupName })
-      .getOne();
-    console.log("Question Group ID: ", questionGroup?.id);
     for (let i = 0; i < subgroups.length; i++) {
-      // create the questionSubgroup
-      await AppDataSource.createQueryBuilder()
-        .insert()
-        .into(QuestionSubgroup)
-        .values([
-          {
-            id: subgroups[i].id,
-            name: subgroups[i].name,
-            questionGroup: questionGroup!,
-			questions: [],
-          },
-        ])
-        .execute();
-      createQuestions(subgroups[i].name, subgroups[i].id);
-    }
+      let subgroup = new QuestionSubgroup();
+	  subgroup.id = subgroups[i].id;
+	  subgroup.name = subgroups[i].name;
+	  subgroup.questionGroup = group;
+	  subgroup.questions = [];
+	  await AppDataSource.manager.save(subgroup);
+	  group.question_subgroups.push(subgroup);
+	  createQuestions(subgroup);
+}
+//   await AppDataSource.manager.save(group);
   } catch (err) {
     console.log("Error while creating subgroups: ", err);
   }
 };
 
 // create the questions for a subgroup
-export const createQuestions = async (questionSubgroupName: string, questionSubgroupId: number) => {
+export const createQuestions = async (
+  subgroup: QuestionSubgroup
+) => {
   try {
-    // fetch the questionSubgroup from the database
-	// we need to have the ID of the subgorup here
-    const questionSubgroup = await AppDataSource.getRepository(QuestionSubgroup)
-      .createQueryBuilder("questionSubgroup")
-      .where("questionSubgroup.name = :name", { name: questionSubgroupName })
-	  .andWhere("questionSubgroup.id = :id", { id: questionSubgroupId })
-      .getOne();
     // add the id at the end of api endpoint
     const data = await sendGetRequest(
-      get_subgroups_id + "/" + questionSubgroup!.id.toString()
+      get_subgroups_id + "/" + subgroup.id.toString()
     );
+	console.log("SUBGROUP: ", subgroup + subgroup.name);
     for (let i = 0; i < data.questions.length; i++) {
       // create the question
-      await AppDataSource.createQueryBuilder()
-        .insert()
-        .into(Question)
-        .values([
-          {
-            id: data.questions[i].id,
-            question: data.questions[i].question_name,
-            description: data.questions[i].description,
-            unit: data.questions[i].unit,
-            questionSubgroup: questionSubgroup!,
-            answers: [],
-          },
-        ])
-        .execute();
-      // fetch the question from the database
-      const question = await AppDataSource.getRepository(Question)
-        .createQueryBuilder("question")
-        .where("question.id = :id", { id: data.questions[i].id })
-		.andWhere("question.question = :question", { question: data.questions[i].question_name })
-        .getOne();
-	  // why is it not possible to push it?
-    //   questionSubgroup!.questions.push(question!);
-    //   createMultipleChoiceQuestions(question!);
+	    let question = new Question();
+		question.id = data.questions[i].id;
+		question.question = data.questions[i].question_name;
+		question.description = data.questions[i].description;
+		question.unit = data.questions[i].unit;
+		question.questionSubgroup = subgroup;
+		question.answers = [];
+		question.questionMultipleChoices = [];
+		await AppDataSource.manager.save(question);
+        subgroup.questions.push(question);
+        createMultipleChoiceQuestions(question);
     }
+	// await AppDataSource.manager.save(subgroup);
   } catch (err) {
     console.log("Error while creating questions: ", err);
   }
@@ -122,27 +90,12 @@ export const createMultipleChoiceQuestions = async (question: Question) => {
     const data = await sendGetRequest(get_question_id + question.id.toString());
     for (let i = 0; i < data.question_multiple_choice.length; i++) {
       // create the multiple choice question
-      await AppDataSource.createQueryBuilder()
-        .insert()
-        .into(QuestionMultipleChoice)
-        .values([
-          {
-            id: data.question_multiple_choice[i].id,
-            value: data.question_multiple_choice[i].value,
-            question: question,
-          },
-        ])
-        .execute();
-      // fetch the multiple choice question from the database
-      const mpQuestion = await AppDataSource.getRepository(
-        QuestionMultipleChoice
-      )
-        .createQueryBuilder("questionMultipleChoice")
-        .where("questionMultipleChoice.id = :id", {
-          id: data.question_multiple_choice[i].id,
-        })
-        .getOne();
-      question.questionMultipleChoices.push(mpQuestion!);
+	  let mpQuestion = new QuestionMultipleChoice();
+	  mpQuestion.id = data.question_multiple_choice[i].id;
+	  mpQuestion.value = data.question_multiple_choice[i].value;
+	  mpQuestion.question = question;
+	  await AppDataSource.manager.save(mpQuestion);
+      question.questionMultipleChoices.push(mpQuestion);
     }
   } catch (err) {
     console.log("Error while creating multiple choice questions: ", err);

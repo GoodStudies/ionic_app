@@ -152,9 +152,9 @@ const DisciplineModal: React.FC<ModalProps> = ({ questionGroup, dismiss }) => {
           onClick={handleSubmit((data) =>
             onSubmit(data, selectedParticipant, questions)
           )}
-          label={"Speichern"}
-          icon={save}
           style={"modal-button"}
+          icon={save}
+          label={"Speichern"}
         />
       </div>
     </IonContent>

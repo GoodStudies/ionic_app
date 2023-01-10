@@ -13,7 +13,3 @@ export const fetchFixedQuestions = async (req: string) => {
 	  console.log("Error while fetching fixed questions: ", err);
 	}
   };
-
-  export const fetchQuestionGroups = async (req: string) => {
-	sendGetRequest(req).then((groups) => {});
-  };

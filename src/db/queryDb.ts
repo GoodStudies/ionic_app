@@ -124,26 +124,20 @@ export const checkAllAnswers = async (participant: Participant) => {
   return true;
 };
 
-// somehow this doesn't seem to work properly
+// inside createGroups, a wrong query;
 export const createFixedQuestions = async (fixedQuestions: Question[]) => {
-	let group = await AppDataSource.manager.find(QuestionGroup, {
+    const q = await AppDataSource.manager.find(Question, {
 		where: {
-			name: "fixed"
+			questionSubgroup: {
+				name: "Balkenbreite 6,0cm",
+			}
 		}
-	});
-	// the most recent group
-	const fixedGroup = group[group.length - 1];
-	console.log("FIXED GROUP FOUND", fixedGroup);
-	let subgroup = await AppDataSource.manager.find(QuestionSubgroup, {
-		where : {
-			questionGroup: fixedGroup
-		}
-	});
-	const fixedSubgroup = subgroup[subgroup.length - 1];
-	console.log("FIXED SUBGROUP FOUND", fixedSubgroup.name);
-	// for (let i = 0; i < fixedSubgroup.questions.length; i++) {
-	// 	fixedQuestions.push(fixedSubgroup.questions[i]);
-	// }
-	console.log("FIXED SUB LENGTH: ", fixedSubgroup.questions);
-	console.log("SUCCESSFULLY CREATED FIXED QUESTIONS");
+	})
+	for (let i = 0; i < q.length; i++) {
+		console.log("NAME: ", q[i].question);
+		console.log("MP: ", q[i].unit);
+		fixedQuestions.push(q[i]);
+	}
+	console.log("LENGTH Q: ", fixedQuestions.length);
+	console.log("CREATED FIXED");
 }
