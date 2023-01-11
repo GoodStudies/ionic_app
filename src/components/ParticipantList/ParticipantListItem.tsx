@@ -11,9 +11,9 @@ import {
   useIonModal,
   useIonRouter,
 } from "@ionic/react";
-import { useParticipant } from "../ParticipantContext";
-import { checkAllAnswers } from "../../db/queryDb";
-import EditParticipantModal from "./EditParticipantModal";
+import { useParticipant } from "../../context/ParticipantContext";
+import { checkAllAnswers } from "../../db/utils";
+import EditParticipantModal from "../Modals/EditParticipantModal";
 
 interface ParticipantListItemProps {
   participant: Participant;

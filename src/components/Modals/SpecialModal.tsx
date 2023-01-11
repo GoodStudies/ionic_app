@@ -8,18 +8,18 @@ import {
   IonSelectOption,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
-import { getQuestions, getSubgroups } from "../db/queryDb";
-import { Question } from "../entity/Question";
-import { QuestionGroup } from "../entity/QuestionGroup";
-import { QuestionSubgroup } from "../entity/QuestionSubgroup";
-import OutlinedIconButton from "./OutlinedIconButton";
+import { getQuestions, getSubgroups } from "../../db/get";
+import { Question } from "../../entity/Question";
+import { QuestionGroup } from "../../entity/QuestionGroup";
+import { QuestionSubgroup } from "../../entity/QuestionSubgroup";
+import OutlinedIconButton from "../OutlinedIconButton";
 import { save } from "ionicons/icons";
 import { useForm } from "react-hook-form";
-import { createSpecialDisciplineAnswers } from "../db/createDisciplineAnswer";
-import { useParticipant } from "./ParticipantContext";
-import { Participant } from "../entity/Participant";
-import { AppDataSource } from "../App";
-import { Answer } from "../entity/Answer";
+import { createSpecialDisciplineAnswers } from "../../db/createDisciplineAnswer";
+import { useParticipant } from "../../context/ParticipantContext";
+import { Participant } from "../../entity/Participant";
+import { AppDataSource } from "../../App";
+import { Answer } from "../../entity/Answer";
 
 interface ModalProps {
   questionGroup: QuestionGroup;

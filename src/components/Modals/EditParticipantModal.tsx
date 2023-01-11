@@ -4,14 +4,8 @@ import {
   IonContent,
   IonDatetime,
   IonHeader,
-  IonInput,
-  IonItem,
-  IonLabel,
-  IonList,
   IonModal,
   IonPage,
-  IonSelect,
-  IonSelectOption,
   IonTitle,
   IonToolbar,
   useIonAlert,
@@ -20,14 +14,14 @@ import { useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
 import { trash } from "ionicons/icons";
 import { useForm } from "react-hook-form";
-import { AppDataSource, initParticipantList, participantList } from "../../App";
-import { updateParticipant } from "../../db/updateParticipant";
+import { participantList } from "../../App";
+import { updateParticipant } from "../../db/participantQuerries";
 import { Participant } from "../../entity/Participant";
-import { QuestionMultipleChoice } from "../../entity/QuestionMultipleChoice";
 import OutlinedIconButton from "../OutlinedIconButton";
-import { useParticipantList } from "./ParticipantListContext";
+import { useParticipantList } from "../../context/ParticipantListContext";
 import useOrientation from "../../hooks/useOrientation";
-import { getAnswers } from "../../db/queryDb";
+import { deleteParticipant } from "../../db/participantQuerries";
+import { getAnswers } from "../../db/get";
 import FixedQuestions from "../FixedQuestionList";
 
 interface ModalProps {
@@ -62,7 +56,7 @@ const EditParticipantModal: React.FC<ModalProps> = ({
         dismiss("save");
       });
     } else if (mode == "delete") {
-      deleteParticipant(participant).then(() => {
+      deleteParticipant(participant, participantList, setParticipantList).then(() => {
         dismiss("delete");
       });
     } else {
@@ -74,13 +68,6 @@ const EditParticipantModal: React.FC<ModalProps> = ({
     setDate(value);
     let formattedDate = format(parseISO(value as string), "dd.MM.yyyy");
     setFormattedDate(formattedDate);
-  };
-
-  const deleteParticipant = async (participant: Participant) => {
-    await AppDataSource.manager.remove(participant);
-    initParticipantList().then(() => {
-      setParticipantList(participantList);
-    });
   };
 
   useEffect(() => {

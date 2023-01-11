@@ -6,14 +6,14 @@ import {
   useIonModal,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
-import { getQuestions, getSubgroupAnswers, getSubgroups } from "../db/queryDb";
+import { getQuestions, getSubgroupAnswers, getSubgroups } from "../db/get";
 import { Participant } from "../entity/Participant";
 import { Question } from "../entity/Question";
 import { QuestionGroup } from "../entity/QuestionGroup";
 import { QuestionSubgroup } from "../entity/QuestionSubgroup";
-import DisciplineModal from "./DisciplineModal";
-import { useParticipant } from "./ParticipantContext";
-import SpecialModal from "./SpecialModal";
+import DisciplineModal from "./Modals/DisciplineModal";
+import { useParticipant } from "../context/ParticipantContext";
+import SpecialModal from "./Modals/SpecialModal";
 
 interface CardItemProps {
   questionGroup: QuestionGroup;

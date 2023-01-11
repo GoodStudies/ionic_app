@@ -8,17 +8,17 @@ import {
   IonSelectOption,
 } from "@ionic/react";
 import { useEffect, useState } from "react";
-import { getQuestions, getSubgroupAnswers, getSubgroups } from "../db/queryDb";
-import { Question } from "../entity/Question";
-import { QuestionGroup } from "../entity/QuestionGroup";
-import { QuestionSubgroup } from "../entity/QuestionSubgroup";
-import OutlinedIconButton from "./OutlinedIconButton";
+import { getQuestions, getSubgroupAnswers, getSubgroups } from "../../db/get";
+import { Question } from "../../entity/Question";
+import { QuestionGroup } from "../../entity/QuestionGroup";
+import { QuestionSubgroup } from "../../entity/QuestionSubgroup";
+import OutlinedIconButton from "../OutlinedIconButton";
 import { save } from "ionicons/icons";
 import { useForm } from "react-hook-form";
-import { createDisciplineAnswers } from "../db/createDisciplineAnswer";
-import { useParticipant } from "./ParticipantContext";
-import { Participant } from "../entity/Participant";
-import { AppDataSource } from "../App";
+import { createDisciplineAnswers } from "../../db/createDisciplineAnswer";
+import { useParticipant } from "../../context/ParticipantContext";
+import { Participant } from "../../entity/Participant";
+import { AppDataSource } from "../../App";
 
 interface ModalProps {
   questionGroup: QuestionGroup;
@@ -26,8 +26,6 @@ interface ModalProps {
 }
 
 const DisciplineModal: React.FC<ModalProps> = ({ questionGroup, dismiss }) => {
-  // every question group with name == subgroup name, needs to list the subgroup questions here
-  // therefore, we need to fetch them here
   const [subgroups, setSubgroups] = useState<QuestionSubgroup[]>([]);
   const [selectedSubgroup, setSelectedSubgroup] = useState<QuestionSubgroup>();
   const [questions, setQuestions] = useState<Question[]>([]);

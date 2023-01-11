@@ -5,8 +5,8 @@ import App, { AppDataSource } from "./App";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
 import "reflect-metadata";
-import ContextProvider from "./components/ParticipantList/ParticipantListContext";
-import ParticipantContextProvider from "./components/ParticipantContext";
+import ContextProvider from "./context/ParticipantListContext";
+import ParticipantContextProvider from "./context/ParticipantContext";
 
 const container = document.getElementById("root");
 const root = createRoot(container!);

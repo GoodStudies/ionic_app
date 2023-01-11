@@ -38,7 +38,7 @@ export class Question {
 
   @OneToMany(() => Answer, (answer) => answer.question, {
     cascade: true,
-    onDelete: 'SET NULL'
+    // onDelete: 'SET NULL'
   })
   answers!: Answer[];
 

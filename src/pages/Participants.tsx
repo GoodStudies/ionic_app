@@ -9,10 +9,10 @@ import {
   columnNames,
 } from "../components/ParticipantList/TableColumns";
 import { useEffect, useState } from "react";
-import ParticipantModal from "../components/ParticipantModal";
+import ParticipantModal from "../components/Modals/ParticipantModal";
 import { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
 import { fixedQuestions, participantList } from "../App";
-import { createFixedQuestions } from "../db/queryDb";
+import { createFixedQuestions } from "../db/createGroups";
 
 const ParticipantsTable: React.FC = () => {
 

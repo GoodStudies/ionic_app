@@ -37,14 +37,13 @@ import "./theme/variables.css";
 import "./theme/tailwind.css";
 
 /* Context Hook */
-import { useParticipantList } from "./components/ParticipantList/ParticipantListContext";
+import { useParticipantList } from "./context/ParticipantListContext";
 
 /* API */
-import { fetchFixedQuestions } from "./api/fetch";
-import { get_fixed } from "./api/endpoints";
 import QuestionGroups from "./pages/QuestionGroups";
 import Login from "./pages/Login";
-import { createFixedQuestions, deleteEverything } from "./db/queryDb";
+import { deleteEverything } from "./db/utils";
+import { createFixedQuestions } from "./db/createGroups";
 
 export let AppDataSource: DataSource;
 export let fixedQuestions: Question[] = [];
@@ -60,7 +59,7 @@ AppDataSource = new DataSource({
   database: "new_db",
   synchronize: true,
   logging: true,
-//   migrations: ["src/migration/**/*.ts"],
+  migrations: ["src/migration/**/*.ts"],
   entities: [
     Participant,
     Answer,

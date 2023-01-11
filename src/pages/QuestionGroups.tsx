@@ -1,7 +1,7 @@
 import { useIonRouter } from "@ionic/react";
 import { groups } from "../App";
 import PageLayout from "../components/PageLayout";
-import { useParticipant } from "../components/ParticipantContext";
+import { useParticipant } from "../context/ParticipantContext";
 import QuestionGroupCard from "../components/QuestionGroupCard";
 
 const QuestionGroupsContent: React.FC = () => {

@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { FieldValues, useForm, UseFormRegister } from "react-hook-form";
 import { format, parseISO } from "date-fns";
-import useOrientation from "../hooks/useOrientation";
-import { AppDataSource, fixedQuestions } from "../App";
+import useOrientation from "../../hooks/useOrientation";
+import { AppDataSource, fixedQuestions } from "../../App";
 import {
   IonButton,
   IonButtons,
@@ -20,9 +20,9 @@ import {
   IonTitle,
   IonToolbar,
 } from "@ionic/react";
-import { QuestionMultipleChoice } from "../entity/QuestionMultipleChoice";
-import { createParticipant } from "../db/createParticipant";
-import { Question } from "../entity/Question";
+import { QuestionMultipleChoice } from "../../entity/QuestionMultipleChoice";
+import { createParticipant } from "../../db/participantQuerries";
+import { Question } from "../../entity/Question";
 
 interface Props {
   question: Question;

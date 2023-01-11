@@ -18,7 +18,6 @@ export const createDisciplineAnswers = async (
       // how to push into the array properly?
       // questions[i].answers.push(answer);
       await AppDataSource.manager.save(answer);
-      console.log("created answer for question: ", questions[i].question);
     }
   }
   console.log("successfully created discipline answers");

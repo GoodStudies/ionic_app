@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { createContext, useContext } from "react";
-import { Participant } from "../../entity/Participant";
+import { Participant } from "../entity/Participant";
 
 type ContextType = {
   newParticipantList: Participant[];
