@@ -8,10 +8,11 @@ import {
   TableColumns,
   columnNames,
 } from "../components/ParticipantList/TableColumns";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import ParticipantModal from "../components/ParticipantModal";
 import { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
-import { participantList } from "../App";
+import { fixedQuestions, participantList } from "../App";
+import { createFixedQuestions } from "../db/queryDb";
 
 const ParticipantsTable: React.FC = () => {
 

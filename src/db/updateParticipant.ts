@@ -10,10 +10,10 @@ export const updateParticipant = async (
 ) => {
   for (let i = 0; i < fixedQuestions.length; i++) {
     // if the data field is not empty, it needs to be updated
-    if (data[fixedQuestions[i].question_name] != "") {
+    if (data[fixedQuestions[i].question] != "") {
       let question = await AppDataSource.manager.find(Question, {
         where: {
-          question: fixedQuestions[i].question_name,
+          question: fixedQuestions[i].question,
         },
       });
       let answer = await AppDataSource.manager.find(Answer, {
@@ -25,22 +25,22 @@ export const updateParticipant = async (
       // check whether the answer already exists
       if (answer[answer.length - 1] != undefined) {
         // if yes, update answer
-        answer[answer.length - 1].value = data[fixedQuestions[i].question_name];
+        answer[answer.length - 1].value = data[fixedQuestions[i].question];
         await AppDataSource.manager.save(answer[answer.length - 1]);
       } else {
         // if no, create new answer
         let new_answer = AppDataSource.manager.create(Answer, {
           question: question[question.length - 1],
           participant: participant,
-          value: data[fixedQuestions[i].question_name],
+          value: data[fixedQuestions[i].question],
         });
         await AppDataSource.manager.save(new_answer);
       }
       // update the participant if firstname, lastname and birthday were changed
       if (question[question.length - 1].question == "Vorname") {
-        participant.firstname = data[fixedQuestions[i].question_name];
+        participant.firstname = data[fixedQuestions[i].question];
       } else if (question[question.length - 1].question == "Nachname") {
-        participant.lastname = data[fixedQuestions[i].question_name];
+        participant.lastname = data[fixedQuestions[i].question];
       }
     }
   }

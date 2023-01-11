@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm, UseFormRegister } from "react-hook-form";
 import { format, parseISO } from "date-fns";
 import useOrientation from "../hooks/useOrientation";
-import { fixedQuestions } from "../App";
+import { AppDataSource, fixedQuestions } from "../App";
 import {
   IonButton,
   IonButtons,
@@ -22,6 +22,84 @@ import {
 } from "@ionic/react";
 import { QuestionMultipleChoice } from "../entity/QuestionMultipleChoice";
 import { createParticipant } from "../db/createParticipant";
+import { Question } from "../entity/Question";
+
+interface Props {
+  question: Question;
+  index: number;
+  register: UseFormRegister<FieldValues>;
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  formattedDate: string | string[] | null;
+}
+
+const FixedQuestions: React.FC<Props> = ({
+  question,
+  index,
+  register,
+  setOpen,
+  formattedDate,
+}) => {
+  const [mp, setMp] = useState<QuestionMultipleChoice[]>([]);
+
+  useEffect(() => {
+    async function checkMpQuestions(question: Question) {
+      const result = await AppDataSource.manager.find(QuestionMultipleChoice, {
+        where: {
+          question: question,
+        },
+      });
+      if (result.length > 0) {
+        setMp(result);
+      } else {
+        setMp([]);
+      }
+    }
+    checkMpQuestions(question);
+  }, []);
+
+  return (
+    <>
+      {mp.length > 0 ? (
+        <>
+          <IonList key={index}>
+            <IonItem key={index}>
+              <IonLabel position="stacked">{question.question}</IonLabel>
+              <IonSelect
+                {...register(question.question)}
+                interface="popover"
+                placeholder={"keine Angabe"}
+              >
+                {mp.map((choice: QuestionMultipleChoice, index: number) => (
+                  <IonSelectOption key={index} value={choice.value}>
+                    {choice.value}
+                  </IonSelectOption>
+                ))}
+              </IonSelect>
+            </IonItem>
+          </IonList>
+        </>
+      ) : (
+        <>
+          <IonItem key={index}>
+            <IonLabel position="stacked">{question.question}</IonLabel>
+            {question.question == "Geburtsdatum" ? (
+              <>
+                <button className="date-picker" onClick={() => setOpen(true)}>
+                  {formattedDate}
+                </button>
+              </>
+            ) : (
+              <IonInput
+                {...register(question.question)}
+                placeholder={question.question}
+              />
+            )}
+          </IonItem>
+        </>
+      )}
+    </>
+  );
+};
 
 const ParticipantModal = ({
   onDismiss,
@@ -29,7 +107,9 @@ const ParticipantModal = ({
   onDismiss: (data?: string | null | undefined | number, role?: string) => void;
 }) => {
   const [date, setDate] = useState<any>();
-  const [formattedDate, setFormattedDate] = useState<string | string[] | null>("Auswaehlen");
+  const [formattedDate, setFormattedDate] = useState<string | string[] | null>(
+    "Auswaehlen"
+  );
   const [open, setOpen] = useState(false);
   const { isPortrait } = useOrientation();
   const { register, handleSubmit } = useForm();
@@ -62,7 +142,8 @@ const ParticipantModal = ({
           <IonButtons slot="end">
             <IonButton
               onClick={handleSubmit((data) => {
-                onSubmit(data, formattedDate?.toString());
+                onSubmit(data, formattedDate?.toString()
+				);
               })}
             >
               Speichern
@@ -71,44 +152,15 @@ const ParticipantModal = ({
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        {fixedQuestions.map((question, index) =>
-          question.multiple_choices.length > 0 ? (
-            <IonList key={index}>
-              <IonItem key={index}>
-                <IonLabel position="stacked">{question.question_name}</IonLabel>
-                <IonSelect
-                  {...register(question.question_name)}
-                  interface="popover"
-                  placeholder={"keine Angabe"}
-                >
-                  {question.multiple_choices.map(
-                    (choice: QuestionMultipleChoice, index: number) => (
-                      <IonSelectOption key={index} value={choice.value}>
-                        {choice.value}
-                      </IonSelectOption>
-                    )
-                  )}
-                </IonSelect>
-              </IonItem>
-            </IonList>
-          ) : (
-            <IonItem key={index}>
-              <IonLabel position="stacked">{question.question_name}</IonLabel>
-              {question.question_name == "Geburtsdatum" ? (
-                <>
-                  <button className="date-picker" onClick={() => setOpen(true)}>
-                    {formattedDate}
-                  </button>
-                </>
-              ) : (
-                <IonInput
-                  {...register(question.question_name)}
-                  placeholder={question.question_name}
-                />
-              )}
-            </IonItem>
-          )
-        )}
+        {fixedQuestions.map((question, index) => (
+          <FixedQuestions
+            question={question}
+            index={index}
+            register={register}
+            setOpen={setOpen}
+            formattedDate={formattedDate}
+          ></FixedQuestions>
+        ))}
         <IonModal
           isOpen={open}
           onDidDismiss={closeModal}

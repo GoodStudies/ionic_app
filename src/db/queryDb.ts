@@ -5,6 +5,7 @@ import { Question } from "../entity/Question";
 import { QuestionGroup } from "../entity/QuestionGroup";
 import { QuestionSubgroup } from "../entity/QuestionSubgroup";
 import { groups } from "../App";
+import { QuestionMultipleChoice } from "../entity/QuestionMultipleChoice";
 
 export const deleteEverything = async () => {
   await AppDataSource.manager.clear(QuestionGroup);
@@ -67,6 +68,10 @@ export const getAnswers = async (
       new_answers.push("keine Angabe");
     }
   }
+  console.log("LENGTH NA: ", new_answers.length);
+  for (let i = 0; i < new_answers.length; i++) {
+	  console.log("NEW ANSWER: ", new_answers[i]);
+  }
   return new_answers;
 };
 
@@ -124,20 +129,16 @@ export const checkAllAnswers = async (participant: Participant) => {
   return true;
 };
 
-// inside createGroups, a wrong query;
 export const createFixedQuestions = async (fixedQuestions: Question[]) => {
-    const q = await AppDataSource.manager.find(Question, {
-		where: {
-			questionSubgroup: {
-				name: "Balkenbreite 6,0cm",
-			}
-		}
-	})
-	for (let i = 0; i < q.length; i++) {
-		console.log("NAME: ", q[i].question);
-		console.log("MP: ", q[i].unit);
-		fixedQuestions.push(q[i]);
-	}
-	console.log("LENGTH Q: ", fixedQuestions.length);
-	console.log("CREATED FIXED");
-}
+  let questions = await AppDataSource.manager.find(Question, {
+    where: {
+      questionSubgroup: {
+        name: "fixed sub group",
+      },
+    },
+  });
+  console.log("FIXED LENGTH: ", questions.length);
+  for (let i = 0; i < questions.length; i++) {
+    fixedQuestions.push(questions[i]);
+  }
+};

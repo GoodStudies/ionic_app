@@ -30,19 +30,19 @@ export const createParticipant = async (
     .getOne();
   // create the answers
   for (let i = 0; i < fixedQuestions.length; i++) {
-    if (fixedQuestions[i].question_name == "Geburtsdatum") {
+    if (fixedQuestions[i].question == "Geburtsdatum") {
       answer = new Answer();
       answer.value = birthdate == "Auswaehlen" ? "keine Angabe" : birthdate!;
 	  answer.participant = participant!;
     } else {
       answer = new Answer();
-      answer.value = data[fixedQuestions[i].question_name];
+      answer.value = data[fixedQuestions[i].question];
       answer.participant = participant!;
     }
     let question = await AppDataSource.getRepository(Question)
       .createQueryBuilder("question")
       .where("question.question = :question", {
-        question: fixedQuestions[i].question_name,
+        question: fixedQuestions[i].question,
       })
       .getOne();
     answer!.question = question!;

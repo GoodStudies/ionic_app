@@ -28,6 +28,7 @@ import OutlinedIconButton from "../OutlinedIconButton";
 import { useParticipantList } from "./ParticipantListContext";
 import useOrientation from "../../hooks/useOrientation";
 import { getAnswers } from "../../db/queryDb";
+import FixedQuestions from "../FixedQuestionList";
 
 interface ModalProps {
   participant: Participant;
@@ -114,47 +115,16 @@ const EditParticipantModal: React.FC<ModalProps> = ({
         </IonToolbar>
       </IonHeader>
       <IonContent className="ion-padding">
-        {fixedQuestions.map((question, index) =>
-          question.multiple_choices.length > 0 ? (
-            <IonList key={index}>
-              <IonItem key={index}>
-                <IonLabel position="stacked">{question.question_name}</IonLabel>
-                <IonSelect
-                  {...register(question.question_name)}
-                  interface="popover"
-                  placeholder={answers[index]}
-                >
-                  {question.multiple_choices.map(
-                    (choice: QuestionMultipleChoice, index: number) => (
-                      <IonSelectOption key={index} value={choice.value}>
-                        {choice.value}
-                      </IonSelectOption>
-                    )
-                  )}
-                </IonSelect>
-              </IonItem>
-            </IonList>
-          ) : (
-            <IonItem key={index}>
-              <IonLabel position="stacked">{question.question_name}</IonLabel>
-              {question.question_name == "Geburtsdatum" ? (
-                <>
-                  <button
-                    className="date-picker"
-                    onClick={() => setOpenDate(true)}
-                  >
-                    {formattedDate}
-                  </button>
-                </>
-              ) : (
-                <IonInput
-                  {...register(question.question_name)}
-                  placeholder={answers[index]}
-                />
-              )}
-            </IonItem>
-          )
-        )}
+        {fixedQuestions.map((question, index) => (
+          <FixedQuestions
+            question={question}
+            index={index}
+            register={register}
+            setOpen={setOpenDate}
+            formattedDate={formattedDate}
+            answers={answers}
+          />
+        ))}
         <IonModal
           isOpen={openDate}
           onDidDismiss={() => setOpenDate(false)}

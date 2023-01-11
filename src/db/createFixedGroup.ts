@@ -30,24 +30,24 @@ export const createFixedQuestionGroup = async () => {
   for (let i = 0; i < fixedQuestions.length; i++) {
     fixedQuestion = AppDataSource.manager.create(Question, {
       id: fixedQuestions[i].id,
-      question: fixedQuestions[i].question_name,
+      question: fixedQuestions[i].question,
       questionSubgroup: fixedQuestionSubgroup,
       questionMultipleChoices: [],
     });
     // add the fixed question to the fixed question subgroup
     fixedQuestionSubgroup.questions.push(fixedQuestion);
     // create the multiple choices for the fixed questions
-    if (fixedQuestions[i].question_multiple_choice.length > 0) {
+    if (fixedQuestions[i].questionMultipleChoices.length > 0) {
       for (
         let j = 0;
-        j < fixedQuestions[i].question_multiple_choice.length;
+        j < fixedQuestions[i].questionMultipleChoices.length;
         j++
       ) {
         fixedQuestionMultipleChoice = AppDataSource.manager.create(
           QuestionMultipleChoice,
           {
-            id: fixedQuestions[i].question_multiple_choice[j].id,
-            value: fixedQuestions[i].question_multiple_choice[j].value,
+            id: fixedQuestions[i].questionMultipleChoices[j].id,
+            value: fixedQuestions[i].questionMultipleChoices[j].value,
             question: fixedQuestion,
           }
         );

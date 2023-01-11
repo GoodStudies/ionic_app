@@ -47,7 +47,7 @@ import Login from "./pages/Login";
 import { createFixedQuestions, deleteEverything } from "./db/queryDb";
 
 export let AppDataSource: DataSource;
-export let fixedQuestions: any[] = [];
+export let fixedQuestions: Question[] = [];
 export let participantList: Participant[] = [];
 export let sqlite = new SQLiteConnection(CapacitorSQLite);
 export let groups: QuestionGroup[] = [];
@@ -60,7 +60,7 @@ AppDataSource = new DataSource({
   database: "new_db",
   synchronize: true,
   logging: true,
-  migrations: ["src/migration/**/*.ts"],
+//   migrations: ["src/migration/**/*.ts"],
   entities: [
     Participant,
     Answer,
@@ -74,7 +74,7 @@ AppDataSource = new DataSource({
 export const initParticipantList = async () => {
   participantList = await AppDataSource.manager.find(Participant);
 };
-fetchFixedQuestions(get_fixed);
+// fetchFixedQuestions(get_fixed);
 
 export const getAllQuestionGroups = async () => {
   groups = await AppDataSource.manager.find(QuestionGroup);
@@ -92,7 +92,7 @@ AppDataSource.initialize()
     getAllQuestionGroups();
     // this needs to be called once, when the app is "initialized @ school"
     // fetchAndCreateStudyQuestions();
-	// createFixedQuestions(fixedQuestions);
+	createFixedQuestions(fixedQuestions);
 	// deleteEverything();
   })
   .catch((err) => {
@@ -108,6 +108,7 @@ const App: React.FC = () => {
 	console.log('Network status changed', status.connectionType);
   });
 
+  // does this cause the toast error?
   useEffect(() => {
     setParticipantList(participantList);
   }, [participantList]);
