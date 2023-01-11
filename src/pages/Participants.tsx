@@ -1,4 +1,4 @@
-import { IonButton, IonGrid, IonList, IonToast, useIonModal } from "@ionic/react";
+import { IonGrid, IonList, IonToast, useIonModal } from "@ionic/react";
 import PageLayout from "../components/PageLayout";
 import { addCircleOutline } from "ionicons/icons";
 import OutlinedIconButton from "../components/OutlinedIconButton";
@@ -11,10 +11,14 @@ import {
 import { useEffect, useState } from "react";
 import ParticipantModal from "../components/Modals/ParticipantModal";
 import { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
-import { fixedQuestions, participantList } from "../App";
-import { createFixedQuestions } from "../db/createGroups";
+import { useParticipantList } from "../context/ParticipantListContext";
+import { Participant } from "../entity/Participant";
 
 const ParticipantsTable: React.FC = () => {
+  const { newParticipantList } = useParticipantList();
+
+  useEffect(() => {
+  }, [newParticipantList]);
 
   return (
     <>
@@ -22,7 +26,7 @@ const ParticipantsTable: React.FC = () => {
         <TableColumns columnNames={columnNames} />
         <IonList className="participantList">
           <ParticipantList
-            items={participantList}
+            items={newParticipantList}
             component={ParticipantListItem}
           />
         </IonList>

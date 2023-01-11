@@ -1,8 +1,6 @@
 import {
   AppDataSource,
   fixedQuestions,
-  initParticipantList,
-  participantList,
 } from "../App";
 import { Answer } from "../entity/Answer";
 import { Participant } from "../entity/Participant";
@@ -53,7 +51,6 @@ export const createParticipant = async (
     answer!.question = question!;
     await AppDataSource.manager.save(answer);
   }
-  participantList.push(participant!);
 };
 
 export const updateParticipant = async (
@@ -107,8 +104,9 @@ export const deleteParticipant = async (
   participantList: any[],
   setList: React.Dispatch<React.SetStateAction<Participant[]>>
 ) => {
-  await AppDataSource.manager.remove(participant);
-  initParticipantList().then(() => {
-    setList(participantList);
-  });
+  await AppDataSource.manager.remove(participant).then(async () => {
+	await AppDataSource.manager.find(Participant).then((participant)=> {
+		setList(participant);
+	})
+  })
 };

@@ -18,7 +18,7 @@ import OutlinedIconButton from "../components/OutlinedIconButton";
 const Login: React.FC = () => {
   const { register, handleSubmit } = useForm();
   const [presentAlert] = useIonAlert();
-  const [present, dismiss] = useIonLoading();
+  const [present] = useIonLoading();
   const navigation = useIonRouter();
 
   const loginFailed = async () => {

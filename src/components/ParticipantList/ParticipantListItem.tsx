@@ -14,6 +14,7 @@ import {
 import { useParticipant } from "../../context/ParticipantContext";
 import { checkAllAnswers } from "../../db/utils";
 import EditParticipantModal from "../Modals/EditParticipantModal";
+import { useQuestionGroups } from "../../context/QuestionGroupsContext";
 
 interface ParticipantListItemProps {
   participant: Participant;
@@ -24,8 +25,10 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
 }) => {
   const [, setParticipant] = useState<Participant>(participant);
   const [showToast, setShowToast] = useState<boolean>(false);
+  const [showDeleteToast, setDeleteToast] = useState<boolean>(false);
   const [checkmark, setCheckmark] = useState<boolean>(false);
   const { setSelectedParticipant } = useParticipant();
+  const { questionGroups, setQuestionGroups } = useQuestionGroups();
   const navigation = useIonRouter();
   const [present, dismiss] = useIonModal(EditParticipantModal, {
     participant: participant,
@@ -41,6 +44,7 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
       setShowToast(true);
     } else if (mode == "delete") {
       dismiss();
+	  setDeleteToast(true);
     } else {
       dismiss();
     }
@@ -56,7 +60,7 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
   };
 
   useEffect(() => {
-    checkAllAnswers(participant).then((result) => {
+    checkAllAnswers(participant, questionGroups).then((result) => {
       setCheckmark(result);
     });
   }, [navigation]);
@@ -89,6 +93,13 @@ const ParticipantListItem: React.FC<ParticipantListItemProps> = ({
         message="Teilnehmer wurde erfolgreich aktualisiert"
         duration={2000}
       />
+	  <IonToast
+          cssClass={"custom-toast"}
+          isOpen={showDeleteToast}
+          onDidDismiss={() => setDeleteToast(false)}
+          message="Teilnehmer wurde erfolgreich entfernt"
+          duration={2000}
+        />
     </IonCard>
   );
 };

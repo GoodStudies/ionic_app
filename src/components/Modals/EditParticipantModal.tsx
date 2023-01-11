@@ -14,7 +14,6 @@ import { useEffect, useState } from "react";
 import { format, parseISO } from "date-fns";
 import { trash } from "ionicons/icons";
 import { useForm } from "react-hook-form";
-import { participantList } from "../../App";
 import { updateParticipant } from "../../db/participantQuerries";
 import { Participant } from "../../entity/Participant";
 import OutlinedIconButton from "../OutlinedIconButton";
@@ -44,7 +43,7 @@ const EditParticipantModal: React.FC<ModalProps> = ({
   const [answers, setAnswers] = useState<string[]>([]);
   const [openDate, setOpenDate] = useState(false);
   const [presentAlert] = useIonAlert();
-  const { setParticipantList } = useParticipantList();
+  const { setParticipantList, newParticipantList } = useParticipantList();
 
   const onSubmit = async (
     data: any,
@@ -56,7 +55,7 @@ const EditParticipantModal: React.FC<ModalProps> = ({
         dismiss("save");
       });
     } else if (mode == "delete") {
-      deleteParticipant(participant, participantList, setParticipantList).then(() => {
+      deleteParticipant(participant, newParticipantList, setParticipantList).then(() => {
         dismiss("delete");
       });
     } else {

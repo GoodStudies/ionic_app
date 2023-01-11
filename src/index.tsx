@@ -1,23 +1,25 @@
 import React from "react";
-import ReactDOM from "react-dom";
 import { createRoot } from "react-dom/client";
-import App, { AppDataSource } from "./App";
+import App from "./App";
 import * as serviceWorkerRegistration from "./serviceWorkerRegistration";
 import reportWebVitals from "./reportWebVitals";
 import "reflect-metadata";
 import ContextProvider from "./context/ParticipantListContext";
 import ParticipantContextProvider from "./context/ParticipantContext";
+import QuestionGroupsProvider from "./context/QuestionGroupsContext";
 
 const container = document.getElementById("root");
 const root = createRoot(container!);
 
 root.render(
   <React.StrictMode>
-    <ContextProvider>
-      <ParticipantContextProvider>
-        <App />
-      </ParticipantContextProvider>
-    </ContextProvider>
+    <QuestionGroupsProvider>
+      <ContextProvider>
+        <ParticipantContextProvider>
+          <App />
+        </ParticipantContextProvider>
+      </ContextProvider>
+    </QuestionGroupsProvider>
   </React.StrictMode>
 );
 

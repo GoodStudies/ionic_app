@@ -23,6 +23,8 @@ import {
 import { QuestionMultipleChoice } from "../../entity/QuestionMultipleChoice";
 import { createParticipant } from "../../db/participantQuerries";
 import { Question } from "../../entity/Question";
+import { useParticipantList } from "../../context/ParticipantListContext";
+import { Participant } from "../../entity/Participant";
 
 interface Props {
   question: Question;
@@ -113,6 +115,7 @@ const ParticipantModal = ({
   const [open, setOpen] = useState(false);
   const { isPortrait } = useOrientation();
   const { register, handleSubmit } = useForm();
+  const { setParticipantList } = useParticipantList();
 
   const closeModal = () => {
     setOpen(false);
@@ -125,7 +128,9 @@ const ParticipantModal = ({
   };
 
   const onSubmit = async (data: any, birthdate: string | undefined) => {
-    createParticipant(data, birthdate);
+    createParticipant(data, birthdate).then(async () => {
+		setParticipantList(await AppDataSource.manager.find(Participant));
+	})
     onDismiss(null, "confirm");
   };
 

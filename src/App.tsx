@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { Route } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Redirect, Route, Switch } from "react-router-dom";
 import { IonReactRouter } from "@ionic/react-router";
 import "reflect-metadata";
 import { CapacitorSQLite, SQLiteConnection } from "@capacitor-community/sqlite";
@@ -9,7 +9,12 @@ import { Answer } from "./entity/Answer";
 import { Question } from "./entity/Question";
 import { QuestionGroup } from "./entity/QuestionGroup";
 import { QuestionMultipleChoice } from "./entity/QuestionMultipleChoice";
-import { IonApp, IonRouterOutlet, setupIonicReact, useIonRouter } from "@ionic/react";
+import {
+  IonApp,
+  IonRouterOutlet,
+  setupIonicReact,
+  useIonRouter,
+} from "@ionic/react";
 import { QuestionSubgroup } from "./entity/QuestionSubgroup";
 import Participants from "./pages/Participants";
 import React from "react";
@@ -44,12 +49,14 @@ import QuestionGroups from "./pages/QuestionGroups";
 import Login from "./pages/Login";
 import { deleteEverything } from "./db/utils";
 import { createFixedQuestions } from "./db/createGroups";
+import GuardedRoute from "./components/GuradedRoute";
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
+import { useQuestionGroups } from "./context/QuestionGroupsContext";
 
 export let AppDataSource: DataSource;
 export let fixedQuestions: Question[] = [];
 export let participantList: Participant[] = [];
 export let sqlite = new SQLiteConnection(CapacitorSQLite);
-export let groups: QuestionGroup[] = [];
 
 setupIonicReact();
 
@@ -70,14 +77,9 @@ AppDataSource = new DataSource({
   ],
 });
 
-export const initParticipantList = async () => {
-  participantList = await AppDataSource.manager.find(Participant);
-};
-// fetchFixedQuestions(get_fixed);
-
-export const getAllQuestionGroups = async () => {
-  groups = await AppDataSource.manager.find(QuestionGroup);
-};
+// export const getAllQuestionGroups = async () => {
+//   groups = await AppDataSource.manager.find(QuestionGroup);
+// };
 
 sqlite.checkConnectionsConsistency().catch((e) => {
   console.log(e);
@@ -87,37 +89,55 @@ sqlite.checkConnectionsConsistency().catch((e) => {
 AppDataSource.initialize()
   .then(() => {
     console.log("Data Source has been initialized!");
-    initParticipantList();
-    getAllQuestionGroups();
+    // getAllQuestionGroups();
     // this needs to be called once, when the app is "initialized @ school"
     // fetchAndCreateStudyQuestions();
-	createFixedQuestions(fixedQuestions);
-	// deleteEverything();
+    createFixedQuestions(fixedQuestions);
+    // deleteEverything();
   })
   .catch((err) => {
     console.error("Error during Data Source initialization", err);
   });
 
 const App: React.FC = () => {
-  const { setParticipantList } = useParticipantList();
+  const { newParticipantList, setParticipantList } = useParticipantList();
+  const { questionGroups, setQuestionGroups } = useQuestionGroups();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   // the network status needs to be checked every time the app is opened
   // if network == wifi and study == complete, the data should be send to the server
-  Network.addListener('networkStatusChange', status => {
-	console.log('Network status changed', status.connectionType);
+  Network.addListener("networkStatusChange", (status) => {
+    console.log("Network status changed", status.connectionType);
   });
 
-  // does this cause the toast error?
   useEffect(() => {
-    setParticipantList(participantList);
-  }, [participantList]);
+	  setTimeout(async () => {
+       const participantList = await AppDataSource.manager.find(Participant);
+	   const questionGroups = await AppDataSource.manager.find(QuestionGroup);
+	   setQuestionGroups(questionGroups);
+	   setParticipantList(participantList);
+	}, 400);
+  }, []);
+
+  const checkIfAuthenticated = async () => {
+    try {
+      await SecureStoragePlugin.get({ key: "username" });
+      await SecureStoragePlugin.get({ key: "password" });
+      console.log("IS AUTHENTICATED");
+      setIsAuthenticated(true);
+    } catch (err) {
+      console.log("NOT AUTHENTICATED: ", err);
+      setIsAuthenticated(false);
+    }
+  };
 
   return (
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          <Route exact path="/" component={Login} />
-          <Route exact path="/home" component={Login} />
+          {/* <Redirect exact from="/" to={ isAuthenticated ? "/participants" : "/login" }/> */}
+          <Route exact path="/" component={Participants} />
+          <Route exact path="/login" component={Login} />
           <Route exact path="/participants" component={Participants} />
           <Route exact path="/questionGroups" component={QuestionGroups} />
         </IonRouterOutlet>

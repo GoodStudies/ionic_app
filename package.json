@@ -30,6 +30,7 @@
     "@types/react-router-dom": "^5.1.7",
     "@types/styled-components": "^5.1.26",
     "autoprefixer": "^10.4.13",
+    "capacitor-secure-storage-plugin": "^0.8.1",
     "history": "^4.9.0",
     "ionicons": "^6.0.4",
     "postcss": "^8.4.20",

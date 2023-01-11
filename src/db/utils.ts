@@ -1,10 +1,9 @@
-import { AppDataSource, initParticipantList } from "../App";
+import { AppDataSource } from "../App";
 import { Answer } from "../entity/Answer";
 import { Participant } from "../entity/Participant";
 import { Question } from "../entity/Question";
 import { QuestionGroup } from "../entity/QuestionGroup";
 import { QuestionSubgroup } from "../entity/QuestionSubgroup";
-import { groups } from "../App";
 import { QuestionMultipleChoice } from "../entity/QuestionMultipleChoice";
 import { getQuestions, getSubgroups } from "./get";
 
@@ -18,8 +17,8 @@ export const deleteEverything = async () => {
   console.log("DELETED EVERYTHING");
 };
 
-export const checkAllAnswers = async (participant: Participant) => {
-  const questionGroups = groups.slice(1, groups.length);
+export const checkAllAnswers = async (participant: Participant, questionGroups: QuestionGroup[]) => {
+  questionGroups = questionGroups.slice(1, questionGroups.length);
   for (let i = 0; i < questionGroups.length; i++) {
     let subgroups = await getSubgroups(questionGroups[i]);
     for (let j = 0; j < subgroups.length; j++) {
