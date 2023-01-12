@@ -13,7 +13,6 @@ import {
   IonApp,
   IonRouterOutlet,
   setupIonicReact,
-  useIonRouter,
 } from "@ionic/react";
 import { QuestionSubgroup } from "./entity/QuestionSubgroup";
 import Participants from "./pages/Participants";
@@ -43,6 +42,9 @@ import "./theme/tailwind.css";
 
 /* Context Hook */
 import { useParticipantList } from "./context/ParticipantListContext";
+
+/* SplashScreen */
+import { SplashScreen } from "@capacitor/splash-screen";
 
 /* API */
 import QuestionGroups from "./pages/QuestionGroups";
@@ -77,10 +79,6 @@ AppDataSource = new DataSource({
   ],
 });
 
-// export const getAllQuestionGroups = async () => {
-//   groups = await AppDataSource.manager.find(QuestionGroup);
-// };
-
 sqlite.checkConnectionsConsistency().catch((e) => {
   console.log(e);
   return {};
@@ -111,12 +109,19 @@ const App: React.FC = () => {
   });
 
   useEffect(() => {
-	  setTimeout(async () => {
-       const participantList = await AppDataSource.manager.find(Participant);
-	   const questionGroups = await AppDataSource.manager.find(QuestionGroup);
-	   setQuestionGroups(questionGroups);
-	   setParticipantList(participantList);
-	}, 400);
+    setTimeout(async () => {
+      const participantList = await AppDataSource.manager.find(Participant);
+      const questionGroups = await AppDataSource.manager.find(QuestionGroup);
+      setQuestionGroups(questionGroups);
+      setParticipantList(participantList);
+    }, 600);
+	// right now, the hide call is set behind a timeout
+	// but it can be driggered after everything important got fetched/created
+    setTimeout(async () => {
+      SplashScreen.hide().then(() => {
+        console.log("HIDE SPLASHSCREEN");
+      });
+    }, 5000);
   }, []);
 
   const checkIfAuthenticated = async () => {

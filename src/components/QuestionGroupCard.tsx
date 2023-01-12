@@ -26,17 +26,16 @@ interface CardProps {
 const QuestionGroupCardItem: React.FC<CardItemProps> = ({ questionGroup }) => {
   const [toast, setToast] = useState(false);
   const [checkmark, setCheckmark] = useState(false);
-  // change the name of this state to something more fitting (i.e update)
-  const [test, setTest] = useState(false);
+  const [data, setData] = useState(false);
   const [subgroups, setSubgroups] = useState<QuestionSubgroup[]>([]);
   const [questions, setQuestions] = useState<Question[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
   const [present, dismiss] = useIonModal(DisciplineModal, {
-    dismiss: (test: boolean) => onDismiss(test),
+    dismiss: (data: boolean) => onDismiss(data),
     questionGroup: questionGroup,
   });
   const [presentSpecial, dismissSpecial] = useIonModal(SpecialModal, {
-    dismissSpecial: (test: boolean) => onDismissSpecial(test),
+    dismissSpecial: (data: boolean) => onDismissSpecial(data),
     questionGroup: questionGroup,
   });
   const { selectedParticipant } = useParticipant();
@@ -49,14 +48,14 @@ const QuestionGroupCardItem: React.FC<CardItemProps> = ({ questionGroup }) => {
     onDidDismiss: () => dismissSpecial(),
   };
 
-  const onDismiss = (test: boolean) => {
-    setTest(test);
+  const onDismiss = (data: boolean) => {
+    setData(data);
     dismiss();
     setToast(true);
   };
 
-  const onDismissSpecial = (test: boolean) => {
-    setTest(test);
+  const onDismissSpecial = (data: boolean) => {
+    setData(data);
     dismissSpecial();
     setToast(true);
   };
@@ -148,8 +147,8 @@ const QuestionGroupCardItem: React.FC<CardItemProps> = ({ questionGroup }) => {
   }, [answers]);
   useEffect(() => {
     updateAnswers();
-    setTest(false);
-  }, [test]);
+    setData(false);
+  }, [data]);
 
   return (
     <div>
