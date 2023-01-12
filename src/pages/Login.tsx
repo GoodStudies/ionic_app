@@ -18,35 +18,29 @@ import OutlinedIconButton from "../components/OutlinedIconButton";
 const Login: React.FC = () => {
   const { register, handleSubmit } = useForm();
   const [presentAlert] = useIonAlert();
-  const [present] = useIonLoading();
-  const navigation = useIonRouter();
+  const [present, dismiss] = useIonLoading();
+  const router = useIonRouter();
 
-  const loginFailed = async () => {
+  const onLogin = async (data: any) => {
     present({
       message: "Einloggen...",
-      duration: 1000,
       spinner: "circles",
-    }).then(() => {
-      setTimeout(
-        () =>
-          presentAlert({
-            header: "Fehler",
-            subHeader: "Anmeldung fehlgeschlagen",
-            message: "Bitte überprüfen Sie Ihre Zugangsdaten",
-            buttons: ["OK"],
-          }),
-        1200
-      );
     });
-  };
-
-  const loginSuccess = async () => {
-    present({
-      message: "Einloggen...",
-      duration: 1000,
-      spinner: "circles",
-    }).then(() => {
-      setTimeout(() => navigation.push("/participants", "forward"), 1200);
+    login(data).then((result) => {
+      // if login successfull
+      if (result) {
+        dismiss();
+        router.push("/participants", "forward");
+        // if login failed
+      } else {
+        dismiss();
+        presentAlert({
+          header: "Fehler",
+          subHeader: "Anmeldung fehlgeschlagen",
+          message: "Bitte überprüfen Sie Ihre Zugangsdaten",
+          buttons: ["OK"],
+        });
+      }
     });
   };
 
@@ -94,7 +88,7 @@ const Login: React.FC = () => {
                   className="checkbox"
                   color={"primary"}
                 ></IonCheckbox>
-                  <IonLabel color={"primary"}>Eingeloggt bleiben</IonLabel>
+                <IonLabel color={"primary"}>Eingeloggt bleiben</IonLabel>
               </IonItem>
               <IonItem lines="none" className="text-sm">
                 <IonLabel color={"primary"} className="underline">
@@ -105,7 +99,7 @@ const Login: React.FC = () => {
             <div className="flex justify-center pt-4">
               <OutlinedIconButton
                 onClick={handleSubmit((data) => {
-                  login(data, loginSuccess, loginFailed);
+                  onLogin(data);
                 })}
                 label={"Einloggen"}
                 style={"login-button"}

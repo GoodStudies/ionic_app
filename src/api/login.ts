@@ -3,8 +3,6 @@ import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 
 export const login = async (
   body: any,
-  success: () => void,
-  failure: () => void
 ) => {
   try {
     const response = await fetch(loginRequest, {
@@ -20,10 +18,13 @@ export const login = async (
       await SecureStoragePlugin.set({ key: "username", value: body.username });
       await SecureStoragePlugin.set({ key: "password", value: body.password });
       // save the access_token
-	  await SecureStoragePlugin.set({ key: "token", value: result.access_token });
-      success();
+      await SecureStoragePlugin.set({
+        key: "token",
+        value: result.access_token,
+      });
+	  return true
     } else {
-      failure();
+      return false;
     }
   } catch (err) {
     console.log("Error during login: ", err);
@@ -32,19 +33,19 @@ export const login = async (
 
 // called if request returns 401 => if (response.status == 401)
 export const reauthenticate = async () => {
-  const username = localStorage.getItem("username");
-  const password = localStorage.getItem("password");
+  const username = await SecureStoragePlugin.get({ key: "username" });
+  const password = await SecureStoragePlugin.get({ key: "password" });
   const response = await fetch(loginRequest, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      username: username,
-      password: password,
+      username: username.value,
+      password: password.value,
       rememberMe: false,
     }),
   });
   const result = await response.json();
-  localStorage.setItem("token", result.access_token);
+  await SecureStoragePlugin.set({ key: "token", value: result.access_token });
 };

@@ -1,13 +1,15 @@
+import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 import { reauthenticate } from "./login";
 
 // possible infinite loop based on this logic, how to change it?
 export const sendGetRequest = async (req: string) => {
+  let token = await SecureStoragePlugin.get({ key: "token" });
   try {
     const response = await fetch(req, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-		"Authorization": `Bearer ${localStorage.getItem("token")}`,
+        Authorization: `Bearer ${token.value}`,
       },
     });
     if (response.status == 401) {

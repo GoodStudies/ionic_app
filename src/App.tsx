@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Redirect, Route, Switch } from "react-router-dom";
+import { Redirect, Route } from "react-router-dom";
 import { IonReactRouter } from "@ionic/react-router";
 import "reflect-metadata";
 import { CapacitorSQLite, SQLiteConnection } from "@capacitor-community/sqlite";
@@ -13,6 +13,7 @@ import {
   IonApp,
   IonRouterOutlet,
   setupIonicReact,
+  useIonRouter,
 } from "@ionic/react";
 import { QuestionSubgroup } from "./entity/QuestionSubgroup";
 import Participants from "./pages/Participants";
@@ -51,7 +52,6 @@ import QuestionGroups from "./pages/QuestionGroups";
 import Login from "./pages/Login";
 import { deleteEverything } from "./db/utils";
 import { createFixedQuestions } from "./db/createGroups";
-import GuardedRoute from "./components/GuradedRoute";
 import { SecureStoragePlugin } from "capacitor-secure-storage-plugin";
 import { useQuestionGroups } from "./context/QuestionGroupsContext";
 
@@ -66,6 +66,7 @@ AppDataSource = new DataSource({
   type: "capacitor",
   driver: new SQLiteConnection(CapacitorSQLite),
   database: "new_db",
+  // do not forget to set this so false for production
   synchronize: true,
   logging: true,
   migrations: ["src/migration/**/*.ts"],
@@ -98,14 +99,23 @@ AppDataSource.initialize()
   });
 
 const App: React.FC = () => {
-  const { newParticipantList, setParticipantList } = useParticipantList();
-  const { questionGroups, setQuestionGroups } = useQuestionGroups();
+  const { setParticipantList } = useParticipantList();
+  const { setQuestionGroups } = useQuestionGroups();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const router = useIonRouter();
 
   // the network status needs to be checked every time the app is opened
   // if network == wifi and study == complete, the data should be send to the server
   Network.addListener("networkStatusChange", (status) => {
     console.log("Network status changed", status.connectionType);
+  });
+
+  document.addEventListener("ionBackButton", (ev: any) => {
+    ev.detail.register(10, () => {
+      if (router.canGoBack()) {
+        router.goBack();
+      }
+    });
   });
 
   useEffect(() => {
@@ -115,23 +125,24 @@ const App: React.FC = () => {
       setQuestionGroups(questionGroups);
       setParticipantList(participantList);
     }, 600);
-	// right now, the hide call is set behind a timeout
-	// but it can be driggered after everything important got fetched/created
-    setTimeout(async () => {
+    checkIfAuthenticated();
+  }, []);
+
+  // set timeout to be 1 sec in order to be sure that the right page got rendered
+  useEffect(() => {
+    setTimeout(() => {
       SplashScreen.hide().then(() => {
         console.log("HIDE SPLASHSCREEN");
       });
-    }, 5000);
-  }, []);
+    }, 1000);
+  }, [isAuthenticated]);
 
   const checkIfAuthenticated = async () => {
     try {
       await SecureStoragePlugin.get({ key: "username" });
       await SecureStoragePlugin.get({ key: "password" });
-      console.log("IS AUTHENTICATED");
       setIsAuthenticated(true);
     } catch (err) {
-      console.log("NOT AUTHENTICATED: ", err);
       setIsAuthenticated(false);
     }
   };
@@ -140,8 +151,11 @@ const App: React.FC = () => {
     <IonApp>
       <IonReactRouter>
         <IonRouterOutlet>
-          {/* <Redirect exact from="/" to={ isAuthenticated ? "/participants" : "/login" }/> */}
-          <Route exact path="/" component={Participants} />
+          <Redirect
+            exact
+            from="/"
+            to={isAuthenticated ? "/participants" : "/login"}
+          />
           <Route exact path="/login" component={Login} />
           <Route exact path="/participants" component={Participants} />
           <Route exact path="/questionGroups" component={QuestionGroups} />

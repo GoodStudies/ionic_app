@@ -1,4 +1,4 @@
-import { IonGrid, IonList, IonToast, useIonModal } from "@ionic/react";
+import { IonGrid, IonList, IonToast, useIonModal, useIonRouter } from "@ionic/react";
 import PageLayout from "../components/PageLayout";
 import { addCircleOutline } from "ionicons/icons";
 import OutlinedIconButton from "../components/OutlinedIconButton";
@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import ParticipantModal from "../components/Modals/ParticipantModal";
 import { OverlayEventDetail } from "@ionic/react/dist/types/components/react-component-lib/interfaces";
 import { useParticipantList } from "../context/ParticipantListContext";
-import { Participant } from "../entity/Participant";
+import { History } from "history";
 
 const ParticipantsTable: React.FC = () => {
   const { newParticipantList } = useParticipantList();
@@ -35,11 +35,16 @@ const ParticipantsTable: React.FC = () => {
   );
 };
 
-const Participants: React.FC = () => {
+interface Props {
+	history: History;
+}
+
+const Participants: React.FC<Props> = ({history}) => {
   const [present, dismiss] = useIonModal(ParticipantModal, {
     onDismiss: (data: string, role: string) => dismiss(data, role),
   });
   const [showToast, setShowToast] = useState(false);
+  const router = useIonRouter();
 
   function openModal() {
     present({
@@ -50,6 +55,19 @@ const Participants: React.FC = () => {
       },
     });
   }
+
+  // replaces routing history. prevents the user from going back to the login screen
+  useEffect(() => {
+	history.replace("");
+  }, []);
+
+  document.addEventListener("ionBackButton", (ev: any) => {
+	ev.detail.register(10, () => {
+	  if (router.canGoBack()) {
+		router.goBack();
+	}
+	});
+  })
 
   return (
     <>
